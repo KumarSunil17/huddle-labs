@@ -126,7 +126,7 @@ class _LoginFormState extends State<LoginForm> {
       GlobalKey<HuddleButtonState>();
   String _email, _password;
   bool _autovalidate = false;
-  bool _visible = false;
+  bool _visible = true;
   @override
   Widget build(BuildContext context) {
     return Form(

@@ -127,7 +127,7 @@ class _SignUpFormState extends State<SignUpForm> {
       GlobalKey<HuddleButtonState>();
   String _email, _password, _name, _phone, _gender;
   bool _autovalidate = false;
-  bool _visible = false;
+  bool _visible = true;
   @override
   Widget build(BuildContext context) {
     return Form(

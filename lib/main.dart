@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/pages/login/login_page.dart';
-import 'package:huddlelabs/pages/signup/signup_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

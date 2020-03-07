@@ -2,6 +2,7 @@ import 'package:firebase/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
 import 'package:firebase/firebase.dart' as fb;
+import 'package:huddlelabs/utils/constants.dart';
 
 class ProfileDrawer extends StatelessWidget {
   final String uid;
@@ -12,44 +13,68 @@ class ProfileDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return StreamBuilder<DocumentSnapshot>(
-      stream: fb.firestore().collection('user').doc(uid).onSnapshot,
-          builder:(context, snapshot){
-            return Container(
-        width: 500,
-        height: size.height,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
-            color: Colors.white),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.center,mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            EditableImage('https://img.icons8.com/bubbles/300/000000/google-logo.png',(){}),
-            EditableField(
-                'James Bond',
-                TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 24,
-                    letterSpacing: 1.3),
-                (value) {}),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      stream: fb.firestore().collection('users').doc(uid).onSnapshot,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          DocumentSnapshot document = snapshot.data;
+          return Container(
+            width: 500,
+            height: size.height,
+            decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.horizontal(left: Radius.circular(20)),
+                color: Colors.white),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                ProfileAchivement(
-                  text: 'Projects',
-                  count: 12,
+                EditableImage(
+                    document.data().containsKey('dp') &&
+                            document.data()['dp'].toString().isNotEmpty
+                        ? '${document.data()['dp']}'
+                        : document.data()['gender'] == 'Male'
+                            ? MALE_PLACEHOLDER
+                            : FEMALE_PLACEHOLDER,
+                    () {}),
+                EditableField(
+                    '${document.data()['name']}',
+                    TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 24,
+                        letterSpacing: 1.3),
+                    (value) {}),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ProfileAchivement(
+                      text: 'Projects',
+                      count: 12,
+                    ),
+                    ProfileAchivement(
+                      text: 'Tasks completed',
+                      count: 45,
+                    ),
+                  ],
                 ),
-                ProfileAchivement(
-                  text: 'Tasks completed',
-                  count: 45,
-                ),
+                EditableField('${document.data()['phone']}',
+                    TextStyle(fontSize: 20), (value) {}),
+                HuddleOutlineButton('Logout', () {})
               ],
             ),
-            EditableField('1234567890', TextStyle(fontSize: 20), (value) {}),
-            HuddleOutlineButton('Logout', () {})
-          ],
-        ),
-      );
-          },
+          );
+        } else {
+          return Container(
+            width: 500,
+            height: size.height,
+            decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.horizontal(left: Radius.circular(20)),
+                color: Colors.white),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+      },
     );
   }
 }
@@ -160,10 +185,8 @@ class _EditableFieldState extends State<EditableField> {
 
   @override
   Widget build(BuildContext context) {
-    final textWidget = Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-
-      children: <Widget>[
+    final textWidget =
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
       Text(
         widget.text,
         style: widget.style,
@@ -183,7 +206,7 @@ class _EditableFieldState extends State<EditableField> {
       children: <Widget>[
         SizedBox(
           width: 200,
-                  child: TextField(
+          child: TextField(
             focusNode: focusNode,
             controller: textController,
             style: widget.style,
@@ -203,7 +226,7 @@ class _EditableFieldState extends State<EditableField> {
     );
     return Align(
       alignment: Alignment.center,
-          child: AnimatedSwitcher(
+      child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 600),
         child: isEditMode ? editWidget : textWidget,
         transitionBuilder: (Widget child, Animation<double> animation) {

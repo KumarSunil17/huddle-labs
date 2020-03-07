@@ -13,14 +13,25 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
-    return HuddleScaffold(
-      Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Text('Dashboard'),
-        ),
-        endDrawer: ProfileDrawer(''),
-      ),
+    return FutureBuilder<FirebaseUser>(
+      future: FirebaseAuth.instance.currentUser(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final String uid = snapshot.data.uid;
+          return HuddleScaffold(
+            Scaffold(
+                appBar: AppBar(
+                  automaticallyImplyLeading: false,
+                  title: Text('Dashboard'),
+                ),
+                endDrawer: ProfileDrawer(uid)),
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }
