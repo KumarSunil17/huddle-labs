@@ -11,22 +11,16 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  String _email, _uid;
   @override
   Widget build(BuildContext context) {
-    FirebaseAuth.instance.currentUser().then((user) {
-      setState(() {
-        _uid = user.uid;
-        _email = user.email;
-      });
-    });
-    return HuddleScaffold(Scaffold(
-      appBar: AppBar(
-        title: Text('Dashboard'),
+    return HuddleScaffold(
+      Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text('Dashboard'),
+        ),
+        endDrawer: ProfileDrawer(''),
       ),
-      endDrawer: ProfileDrawer(),
-    ),);
+    );
   }
 }
