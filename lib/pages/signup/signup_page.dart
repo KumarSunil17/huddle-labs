@@ -332,6 +332,7 @@ class _SignUpFormState extends State<SignUpForm> {
       'email': _email,
       'phone': _phone,
       'gender': _gender,
+      'createdAt': DateTime.now()
     };
     FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: _email, password: _password)

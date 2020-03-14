@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data is FirebaseUser) {
               FirebaseUser user = snapshot.data;
-              if(user!=null && user.uid!=null && user.uid.isNotEmpty){
+              if (user != null && user.uid != null && user.uid.isNotEmpty) {
                 return DashboardPage();
               }
               return LoginPage();
