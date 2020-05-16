@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
@@ -69,7 +68,7 @@ class SignupPage extends StatelessWidget {
           left: 0,
           right: 0,
           bottom: size.height / 2.1,
-          child: Container(color: Color(0xFF4ACBF9)),
+          child: Container(color: Theme.of(context).primaryColor),
         ),
         Positioned(
           bottom: 0,
@@ -106,7 +105,7 @@ class SignupPage extends StatelessWidget {
     return HuddleScaffold(
       ResponsiveWidget(
           largeScreen: largeWidget,
-          mediumScreen: smallWidget,
+          mediumScreen: largeWidget,
           smallScreen: smallWidget),
       key: _scaffoldKey,
     );
@@ -146,6 +145,7 @@ class _SignUpFormState extends State<SignUpForm> {
             SizedBox(height: 15),
             //name
             TextFormField(
+              autofocus: true,
               keyboardType: TextInputType.text,
               textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(
@@ -334,9 +334,8 @@ class _SignUpFormState extends State<SignUpForm> {
       'gender': _gender,
       'createdAt': DateTime.now()
     };
-    FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: _email, password: _password)
-        .then((AuthResult result) {
+    fb.auth().createUserWithEmailAndPassword( _email, _password)
+        .then((fb.UserCredential result) {
       final Firestore firestore = fb.firestore();
       if (firestore != null) {
         firestore
@@ -350,7 +349,7 @@ class _SignUpFormState extends State<SignUpForm> {
           _buttonKey.currentState.hideLoader();
         }).catchError((error) {
           if (error is fb.FirebaseError) {
-            FirebaseAuth.instance.signOut();
+            fb.auth().signOut();
             widget._scaffoldKey.currentState
                 .showErrorSnackBar('${error.message}');
             _buttonKey.currentState.hideLoader();

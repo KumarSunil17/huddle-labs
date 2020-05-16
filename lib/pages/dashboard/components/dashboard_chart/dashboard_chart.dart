@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-
 import 'index.dart';
 
 class DashboardChart extends StatefulWidget {
@@ -13,6 +12,7 @@ class DashboardChart extends StatefulWidget {
     Colors.pink,
     Colors.redAccent,
   ];
+  DashboardChart({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => DashboardChartState();
@@ -21,10 +21,19 @@ class DashboardChart extends StatefulWidget {
 class DashboardChartState extends State<DashboardChart> {
   final Color barBackgroundColor = Colors.transparent;
   final Duration animDuration = const Duration(milliseconds: 250);
+  int _touchedIndex;
+  bool _loading = false;
 
-  int touchedIndex;
+  bool get loading => _loading;
 
-  bool isPlaying = false;
+  set loading(bool value) {
+    setState(() {
+      _loading = value;
+      if (_loading) {
+        refreshState();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,48 +41,28 @@ class DashboardChartState extends State<DashboardChart> {
       height: 400,
       width: 800,
       child: Stack(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: BarChart(
-                      isPlaying ? randomData() : mainBarData(),
-                      swapAnimationDuration: animDuration,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-              ],
+        children: [
+          Positioned.fill(bottom: 20,
+            child: BarChart(
+              _loading ? randomData() : mainBarData(),
+              swapAnimationDuration: animDuration,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                icon: Icon(
-                  isPlaying ? Icons.pause : Icons.play_arrow,
-                  color: const Color(0xff0f4a3c),
-                ),
-                onPressed: () {
-                  setState(() {
-                    isPlaying = !isPlaying;
-                    if (isPlaying) {
-                      refreshState();
-                    }
-                  });
-                },
-              ),
-            ),
+          if(!_loading)Positioned(
+            bottom: 0,
+            left: 46,
+            right: 0,
+            height: 50,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+                itemBuilder: (c, i) => Container(
+                      height: 50,
+                      width: 50.5,
+                      color: Colors.orange,
+                    ),
+                separatorBuilder: (c, i) =>
+                    Container(height: 50, width: 50),
+                itemCount: 8),
           )
         ],
       ),
@@ -108,22 +97,24 @@ class DashboardChartState extends State<DashboardChart> {
     );
   }
 
-  List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
+  List<BarChartGroupData> showingGroups() => List.generate(8, (i) {
         switch (i) {
           case 0:
-            return makeGroupData(0, 5, isTouched: i == touchedIndex);
+            return makeGroupData(0, 5, isTouched: i == _touchedIndex);
           case 1:
-            return makeGroupData(1, 6.5, isTouched: i == touchedIndex);
+            return makeGroupData(1, 6.5, isTouched: i == _touchedIndex);
           case 2:
-            return makeGroupData(2, 5, isTouched: i == touchedIndex);
+            return makeGroupData(2, 5, isTouched: i == _touchedIndex);
           case 3:
-            return makeGroupData(3, 7.5, isTouched: i == touchedIndex);
+            return makeGroupData(3, 7.5, isTouched: i == _touchedIndex);
           case 4:
-            return makeGroupData(4, 9, isTouched: i == touchedIndex);
+            return makeGroupData(4, 9, isTouched: i == _touchedIndex);
           case 5:
-            return makeGroupData(5, 11.5, isTouched: i == touchedIndex);
+            return makeGroupData(5, 11.5, isTouched: i == _touchedIndex);
           case 6:
-            return makeGroupData(6, 6.5, isTouched: i == touchedIndex);
+            return makeGroupData(6, 6.5, isTouched: i == _touchedIndex);
+             case 7:
+            return makeGroupData(7, 6.5, isTouched: i == _touchedIndex);
           default:
             return null;
         }
@@ -167,9 +158,9 @@ class DashboardChartState extends State<DashboardChart> {
             if (barTouchResponse.spot != null &&
                 barTouchResponse.touchInput is! FlPanEnd &&
                 barTouchResponse.touchInput is! FlLongPressEnd) {
-              touchedIndex = barTouchResponse.spot.touchedBarGroupIndex;
+              _touchedIndex = barTouchResponse.spot.touchedBarGroupIndex;
             } else {
-              touchedIndex = -1;
+              _touchedIndex = -1;
             }
           });
         },
@@ -286,7 +277,7 @@ class DashboardChartState extends State<DashboardChart> {
     setState(() {});
     await Future<dynamic>.delayed(
         animDuration + const Duration(milliseconds: 50));
-    if (isPlaying) {
+    if (_loading) {
       refreshState();
     }
   }

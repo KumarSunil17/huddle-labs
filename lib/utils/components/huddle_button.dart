@@ -15,7 +15,7 @@ class HuddleButton extends StatefulWidget {
 
 class HuddleButtonState extends State<HuddleButton> {
   bool _isLoading = false;
-  
+
   showLoader() {
     setState(() {
       _isLoading = true;
@@ -33,9 +33,13 @@ class HuddleButtonState extends State<HuddleButton> {
     return MaterialButton(
       height: widget.height,
       padding: const EdgeInsets.symmetric(horizontal: 40),
-      onPressed: _isLoading ? (){} : widget.onPressed,
+      onPressed: _isLoading ? () {} : widget.onPressed,
       child: _isLoading
-          ? Center(child: HuddleLoader(color: Colors.white,size: 40,))
+          ? Center(
+              child: HuddleLoader(
+              color: Colors.white,
+              size: 40,
+            ))
           : Text(
               widget.text,
               style: TextStyle(inherit: true, fontSize: 18),
@@ -63,14 +67,63 @@ class HuddleOutlineButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlineButton(
-      onPressed: onPressed,borderSide: BorderSide(width: 5, color: Theme.of(context).primaryColor),
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical:12),
-      child: Text(text, style:TextStyle(inherit: true, fontSize: 18)),
+      onPressed: onPressed,
+      borderSide: BorderSide(width: 5, color: Theme.of(context).primaryColor),
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+      child: Text(text, style: TextStyle(inherit: true, fontSize: 18)),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(40),
               topLeft: Radius.circular(40),
               bottomRight: Radius.circular(40))),
+    );
+  }
+}
+
+class HuddleCloseButton extends StatefulWidget {
+  @override
+  _HuddleCloseButtonState createState() => _HuddleCloseButtonState();
+}
+
+class _HuddleCloseButtonState extends State<HuddleCloseButton>
+    with SingleTickerProviderStateMixin {
+  AnimationController rotationController;
+  @override
+  void initState() {
+    super.initState();
+    rotationController = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+  }
+
+  @override
+  void dispose() {
+    rotationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.maybePop(context);
+      },
+      child: MouseRegion(
+        child: RotationTransition(
+            turns: Tween<double>(begin: 0.0, end: 0.5).animate(CurvedAnimation(
+                parent: rotationController,
+                curve: Interval(
+                  0.0,
+                  0.800,
+                  curve: Curves.fastOutSlowIn,
+                ))),
+            child: Container(child: Icon(Icons.close, size: 50))),
+        onHover: (e) {
+          rotationController.forward();
+        },
+        onExit: (e) {
+          rotationController.reverse();
+        },
+      ),
     );
   }
 }

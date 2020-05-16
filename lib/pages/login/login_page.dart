@@ -1,5 +1,4 @@
 import 'package:firebase/firebase.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
@@ -69,7 +68,7 @@ class LoginPage extends StatelessWidget {
           left: 0,
           right: 0,
           bottom: size.height / 2.1,
-          child: Container(color: Color(0xFF4ACBF9)),
+          child: Container(color: Theme.of(context).primaryColor),
         ),
         Positioned(
           bottom: 0,
@@ -105,7 +104,7 @@ class LoginPage extends StatelessWidget {
     return HuddleScaffold(
       ResponsiveWidget(
           largeScreen: largeWidget,
-          mediumScreen: smallWidget,
+          mediumScreen: largeWidget,
           smallScreen: smallWidget),
       key: _scaffoldKey,
     );
@@ -144,6 +143,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
             SizedBox(height: 30),
             TextFormField(
+              autofocus: true,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
@@ -170,13 +170,13 @@ class _LoginFormState extends State<LoginForm> {
                 border: UnderlineInputBorder(),
                 prefixIcon: Icon(Icons.lock),
                 hintText: '*******',
-                suffixIcon: IconButton(
-                  onPressed: () {
+                suffixIcon: GestureDetector(
+                  onTap: () {
                     setState(() {
                       _visible = !_visible;
                     });
                   },
-                  icon: _visible
+                  child: _visible
                       ? Icon(Icons.visibility)
                       : Icon(Icons.visibility_off),
                 ),
@@ -256,9 +256,9 @@ class _LoginFormState extends State<LoginForm> {
 
   _doLogin() {
     _buttonKey.currentState.showLoader();
-    FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: _email, password: _password)
-        .then((AuthResult result) {
+    auth()
+        .signInWithEmailAndPassword(_email, _password)
+        .then((UserCredential result) {
       widget._scaffoldKey.currentState.showErrorSnackBar('Sign in successful.');
 
       Navigator.pushReplacement(context, FadeRoute(page: DashboardPage()));

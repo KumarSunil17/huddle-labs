@@ -1,5 +1,4 @@
-import 'package:firebase/firebase.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase/firebase.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
 import 'package:huddlelabs/utils/components/huddle_extensions.dart';
@@ -14,10 +13,10 @@ class ForgotPasswordDialog extends StatelessWidget {
     _sendLink() {
       if(_email.isNotEmpty){
    
-      FirebaseAuth.instance.sendPasswordResetEmail(email: _email).then((value) {
+      fb.auth().sendPasswordResetEmail(_email).then((value) {
         Navigator.pop(context, 'Reset email sent successfully.');
       }).catchError((error) {
-        if (error is FirebaseError) {
+        if (error is fb.FirebaseError) {
           Navigator.pop(context, '${error.message}');return;
         }
         print('$error');
