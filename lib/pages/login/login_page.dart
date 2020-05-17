@@ -261,7 +261,8 @@ class _LoginFormState extends State<LoginForm> {
         .then((UserCredential result) {
       widget._scaffoldKey.currentState.showErrorSnackBar('Sign in successful.');
 
-      Navigator.pushReplacement(context, FadeRoute(page: DashboardPage()));
+      Navigator.pushAndRemoveUntil(
+          context, FadeRoute(page: DashboardPage()), (route) => false);
     }).catchError((error) {
       if (error is FirebaseError) {
         widget._scaffoldKey.currentState.showErrorSnackBar('${error.message}');

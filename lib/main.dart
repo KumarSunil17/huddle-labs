@@ -35,7 +35,6 @@ class MyApp extends StatelessWidget {
           buttonColor: Color(0xFF7754F6),
           primaryColor: Color(0xFF005CEA),
           // accentColor: Color(0xFF005CEA),
-          cardColor: Color(0xFFF6F4FC),
           // scaffoldBackgroundColor: Color(0xFFF4F4FA)
         ),
         theme: ThemeData(
@@ -43,7 +42,6 @@ class MyApp extends StatelessWidget {
           buttonColor: Color(0xFF7754F6),
           primaryColor: Color(0xFF005CEA),
           // accentColor: Color(0xFF005CEA),
-          cardColor: Color(0xFFF6F4FC),
           // scaffoldBackgroundColor: Color(0xFFF4F4FA)
         ),
         home: Builder(

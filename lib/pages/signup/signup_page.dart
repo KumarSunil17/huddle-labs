@@ -8,6 +8,7 @@ import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:firebase/firestore.dart';
+import 'package:huddlelabs/utils/enums.dart';
 
 class SignupPage extends StatelessWidget {
   static const String routeName = '/signup';
@@ -124,7 +125,8 @@ class _SignUpFormState extends State<SignUpForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<HuddleButtonState> _buttonKey =
       GlobalKey<HuddleButtonState>();
-  String _email, _password, _name, _phone, _gender;
+  String _email, _password, _name, _phone;
+  Gender _gender;
   bool _autovalidate = false;
   bool _visible = true;
   @override
@@ -206,11 +208,11 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             SizedBox(height: 15),
             //gender
-            DropdownButtonFormField(
+            DropdownButtonFormField<Gender>(
               elevation: 2,
-              items: ['Male', 'Female', 'Others', 'Not to say']
+              items: Gender.values
                   .map((e) => DropdownMenuItem(
-                        child: Text(e),
+                        child: Text(e.toGenderString),
                         value: e,
                       ))
                   .toList(),
@@ -221,7 +223,7 @@ class _SignUpFormState extends State<SignUpForm> {
               },
               isDense: true,
               validator: (value) {
-                if (value == null || value.isEmpty)
+                if (value == null)
                   return 'Gender is required.';
                 return null;
               },
@@ -252,9 +254,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 labelText: 'Password',
               ),
               onChanged: (value) {
-                setState(() {
                   _password = value;
-                });
               },
               onSaved: (String value) {
                 _password = value;
@@ -328,24 +328,21 @@ class _SignUpFormState extends State<SignUpForm> {
   _doSignUp() {
     _buttonKey.currentState.showLoader();
     Map<String, dynamic> data = {
-      'name': _name,
-      'email': _email,
-      'phone': _phone,
-      'gender': _gender,
+      'name': _name.trim(),
+      'email': _email.trim(),
+      'phone': _phone.trim(),
+      'gender': _gender.toInt,
       'createdAt': DateTime.now()
     };
-    fb.auth().createUserWithEmailAndPassword( _email, _password)
+    fb.auth().createUserWithEmailAndPassword( _email.trim(), _password.trim())
         .then((fb.UserCredential result) {
-      final Firestore firestore = fb.firestore();
-      if (firestore != null) {
-        firestore
-            .collection('users')
+        usersCollection
             .doc(result.user.uid)
             .set(data)
             .then((value) {
           widget._scaffoldKey.currentState
               .showErrorSnackBar('Sign up successful.');
-          Navigator.pushReplacement(context, FadeRoute(page: DashboardPage()));
+          Navigator.pushAndRemoveUntil(context,FadeRoute(page: DashboardPage()), (route) => false);
           _buttonKey.currentState.hideLoader();
         }).catchError((error) {
           if (error is fb.FirebaseError) {
@@ -359,7 +356,7 @@ class _SignUpFormState extends State<SignUpForm> {
         }).whenComplete(() {
           _buttonKey.currentState.hideLoader();
         });
-      }
+      
     }).catchError((error) {
       if (error is fb.FirebaseError) {
         widget._scaffoldKey.currentState.showErrorSnackBar('${error.message}');
