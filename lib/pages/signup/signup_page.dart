@@ -3,7 +3,6 @@ import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
 import 'package:huddlelabs/utils/components/huddle_extensions.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
-import 'package:huddlelabs/utils/components/huddle_scaffold.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:firebase/firebase.dart' as fb;
@@ -12,8 +11,6 @@ import 'package:huddlelabs/utils/enums.dart';
 
 class SignupPage extends StatelessWidget {
   static const String routeName = '/signup';
-  final GlobalKey<HuddleScaffoldState> _scaffoldKey =
-      GlobalKey<HuddleScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +43,7 @@ class SignupPage extends StatelessWidget {
                           Expanded(
                               flex: 3,
                               child: SingleChildScrollView(
-                                  child: SignUpForm(_scaffoldKey))),
+                                  child: SignUpForm())),
                           Spacer(
                             flex: 1,
                           ),
@@ -96,27 +93,23 @@ class SignupPage extends StatelessWidget {
             child: SimpleDialog(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 60, vertical: 40),
-              children: [SignUpForm(_scaffoldKey)],
+              children: [SignUpForm()],
             ),
           ),
         ),
       ],
     );
 
-    return HuddleScaffold(
-      ResponsiveWidget(
+    return Scaffold(
+      body:ResponsiveWidget(
           largeScreen: largeWidget,
           mediumScreen: largeWidget,
           smallScreen: smallWidget),
-      key: _scaffoldKey,
     );
   }
 }
 
 class SignUpForm extends StatefulWidget {
-  final GlobalKey<HuddleScaffoldState> _scaffoldKey;
-  SignUpForm(this._scaffoldKey);
-
   @override
   _SignUpFormState createState() => _SignUpFormState();
 }
@@ -340,15 +333,13 @@ class _SignUpFormState extends State<SignUpForm> {
             .doc(result.user.uid)
             .set(data)
             .then((value) {
-          widget._scaffoldKey.currentState
-              .showErrorSnackBar('Sign up successful.');
+              showSnackbar('Sign up successful.', context);
           Navigator.pushAndRemoveUntil(context,FadeRoute(page: DashboardPage()), (route) => false);
           _buttonKey.currentState.hideLoader();
         }).catchError((error) {
           if (error is fb.FirebaseError) {
             fb.auth().signOut();
-            widget._scaffoldKey.currentState
-                .showErrorSnackBar('${error.message}');
+            showSnackbar('${error.message}',context);
             _buttonKey.currentState.hideLoader();
           } else {
             print(error);
@@ -359,7 +350,7 @@ class _SignUpFormState extends State<SignUpForm> {
       
     }).catchError((error) {
       if (error is fb.FirebaseError) {
-        widget._scaffoldKey.currentState.showErrorSnackBar('${error.message}');
+        showSnackbar('${error.message}', context);
         _buttonKey.currentState.hideLoader();
       } else {
         print(error);

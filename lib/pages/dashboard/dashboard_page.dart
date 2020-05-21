@@ -1,11 +1,13 @@
+import 'package:firebase/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase/firebase.dart' as fb;
-import 'package:huddlelabs/pages/dashboard/components/profile_drawer.dart';
-import 'package:huddlelabs/pages/dashboard/components/project_body.dart';
-import 'package:huddlelabs/pages/dashboard/components/task_body.dart';
-import 'package:huddlelabs/utils/components/huddle_scaffold.dart';
+import 'package:huddlelabs/pages/dashboard/add_project_dialog.dart';
+import 'package:huddlelabs/pages/project/project_details_page.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
+import 'package:huddlelabs/utils/constants.dart';
+import 'package:intl/intl.dart';
 
+import 'components/profile_dialog.dart';
 import 'notification_drawer.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -45,44 +47,74 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Widget yourProjectsList = GridView.builder(
-        padding: const EdgeInsets.all(16),
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.4),
-        itemCount: 4,
-        itemBuilder: (c, i) {
-          if (i == 0) {
-            return AddProjectCard();
-          } else
-            return ProjectCard(
-              createdAt: '22/05/2020',
-              name: 'Demo project',
-              desc: 'A project with dfemo desc.',
-            );
+   Widget yourProjectsList(count) => StreamBuilder<QuerySnapshot>(
+      stream: projectCollection.onSnapshot,
+      builder: (BuildContext context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: AddProjectCard());
+        } else {
+          final List<DocumentSnapshot> data = snapshot.data.docs
+              .where((element) =>
+                  element.data()['createdBy'] == fb.auth().currentUser.uid)
+              .toList();
+          return GridView.builder(
+              padding: const EdgeInsets.all(16),
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: count,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.4),
+              itemCount: data.length + 1,
+              itemBuilder: (c, i) {
+                if (i == 0) {
+                  return AddProjectCard();
+                } else
+                  return ProjectCard(data[i].id,
+                    createdAt: DateFormat('dd/MM/yyyy').format(
+                        DateTime.parse(data[i - 1].data()['createdAt'])),
+                    name: data[i - 1].data()['name'],
+                    desc: data[i - 1].data()['description'],
+                  );
+              });
+        }
+      },
+    );
+    Widget assignedProjectsList(count) => StreamBuilder<QuerySnapshot>(
+        stream: projectCollection.onSnapshot,
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.hasData) {
+            final List<DocumentSnapshot> data = snapshot.data.docs
+                .where((element) =>
+                    element
+                        .data()['members']
+                        .contains(fb.auth().currentUser.uid) &&
+                    element.data()['createdBy'] != fb.auth().currentUser.uid)
+                .toList();
+
+            return GridView.builder(
+                padding: const EdgeInsets.all(16),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: count,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 1.4),
+                itemCount: data.length,
+                itemBuilder: (c, i) {
+                  return ProjectCard(data[i].id,
+                    createdAt: DateFormat('dd/MM/yyyy')
+                        .format(DateTime.parse(data[i].data()['createdAt'])),
+                    name: data[i].data()['name'],
+                    desc: data[i].data()['description'],
+                  );
+                });
+          }
+          return Container();
         });
 
-    final Widget assignedProjectsList = GridView.builder(
-        padding: const EdgeInsets.all(16),
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.4),
-        itemCount: 4,
-        itemBuilder: (c, i) {
-          return ProjectCard(
-            createdAt: '22/05/2020',
-            name: 'Demo project',
-            desc: 'A project with dfemo desc.',
-          );
-        });
     final Widget largeScreen = Padding(
       padding: EdgeInsets.only(
         left: MediaQuery.of(context).size.width / 5,
@@ -103,7 +135,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   fontWeight: FontWeight.w600),
             ),
           ),
-          yourProjectsList,
+          yourProjectsList(3),
           Divider(color: Colors.grey, height: 28),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
@@ -115,7 +147,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   fontWeight: FontWeight.w600),
             ),
           ),
-          assignedProjectsList
+          assignedProjectsList(3)
         ],
       ),
     );
@@ -139,7 +171,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   fontWeight: FontWeight.w600),
             ),
           ),
-          yourProjectsList,
+          yourProjectsList(3),
           Divider(color: Colors.grey, height: 28),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
@@ -151,7 +183,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   fontWeight: FontWeight.w600),
             ),
           ),
-          assignedProjectsList
+          assignedProjectsList(3)
         ],
       ),
     );
@@ -171,26 +203,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   fontWeight: FontWeight.w600),
             ),
           ),
-          GridView.builder(
-              padding: const EdgeInsets.all(16),
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.8),
-              itemCount: 4,
-              itemBuilder: (c, i) {
-                if (i == 0) {
-                  return AddProjectCard();
-                } else
-                  return ProjectCard(
-                    createdAt: '22/05/2020',
-                    name: 'Demo project',
-                    desc: 'A project with dfemo desc.',
-                  );
-              }),
+          yourProjectsList(1),
           Divider(color: Colors.grey, height: 28),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
@@ -202,23 +215,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   fontWeight: FontWeight.w600),
             ),
           ),
-          GridView.builder(
-              padding: const EdgeInsets.all(16),
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.8),
-              itemCount: 4,
-              itemBuilder: (c, i) {
-                return ProjectCard(
-                  createdAt: '22/05/2020',
-                  name: 'Demo project',
-                  desc: 'A project with dfemo desc.',
-                );
-              })
+          assignedProjectsList(1)
         ],
       ),
     );
@@ -273,113 +270,31 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-class ProfileWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Align(
-        alignment: Alignment.topRight,
-        child: Container(
-          width: 350,
-          margin: const EdgeInsets.all(kToolbarHeight),
-          padding: const EdgeInsets.symmetric(vertical: 32),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: 150,
-                  width: 150,
-                  child: Stack(
-                    children: <Widget>[
-                      Material(
-                          color: Colors.white,
-                          elevation: 8,
-                          shadowColor: Colors.red,
-                          clipBehavior: Clip.antiAlias,
-                          shape: CircleBorder(
-                              side: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                  width: 3)),
-                          child: Image.network(
-                              'https://image.freepik.com/free-psd/mobile-phone-3d-mock-up-arrows_23-2148462085.jpg',
-                              fit: BoxFit.cover,
-                              height: 200,
-                              width: 200)),
-                      Positioned(
-                          right: 8,
-                          bottom: 8,
-                          height: 36,
-                          width: 36,
-                          child: FloatingActionButton(
-                            onPressed: () {},
-                            elevation: 0,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: Icon(Icons.add_a_photo, size: 16),
-                          ))
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 28,
-                ),
-                Text('sadadasd',
-                    style:
-                        TextStyle(fontWeight: FontWeight.w700, fontSize: 22)),
-                SizedBox(
-                  height: 8,
-                ),
-                Text('skmuduli17@gmail.com', style: TextStyle(fontSize: 16)),
-                SizedBox(
-                  height: 2,
-                ),
-                Text('+919090132200', style: TextStyle(fontSize: 16)),
-                SizedBox(height: 32),
-                OutlineButton(
-                  onPressed: () {},
-                  child: Text('Sign out'),
-                ),
-                SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FlatButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Privacy policy',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                    Text('.'),
-                    FlatButton(
-                      onPressed: () {},
-                      child: Text('Terms and Conditions',
-                          style: TextStyle(fontSize: 12)),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class AddProjectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          showGeneralDialog(
+              barrierDismissible: true,
+              barrierLabel: 'add-project-dialog',
+              barrierColor: Colors.black.withOpacity(0.5),
+              transitionBuilder: (context, a1, a2, widget) {
+                return Transform.scale(
+                  scale: a1.value,
+                  child: Opacity(opacity: a1.value, child: widget),
+                );
+              },
+              transitionDuration: Duration(milliseconds: 300),
+              context: context,
+              pageBuilder: (context, animation1, animation2) {
+                return AddProjectDialog();
+              });
+        },
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -407,15 +322,18 @@ class AddProjectCard extends StatelessWidget {
 }
 
 class ProjectCard extends StatelessWidget {
-  final String name, desc, createdAt;
-  const ProjectCard({this.createdAt: '', this.desc: '', this.name: ''});
+  final String name, desc, createdAt, projectId;
+  const ProjectCard(this.projectId,{this.createdAt: '', this.desc: '', this.name: ''});
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (c)=>ProjectDetailsPage(this.projectId)));
+        },
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/pages/login/login_page.dart';
+import 'package:huddlelabs/pages/project/project_details_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,14 +45,16 @@ class MyApp extends StatelessWidget {
           // accentColor: Color(0xFF005CEA),
           // scaffoldBackgroundColor: Color(0xFFF4F4FA)
         ),
-        home: Builder(
-          builder: (context) {
-            fb.User user = fb.auth().currentUser;
-            if (user != null && user.uid != null && user.uid.isNotEmpty) {
-              return DashboardPage();
-            }
-            return LoginPage();
-          },
-        ));
+        home: ProjectDetailsPage(''),
+        // Builder(
+        //   builder: (context) {
+        //     fb.User user = fb.auth().currentUser;
+        //     if (user != null && user.uid != null && user.uid.isNotEmpty) {
+        //       return DashboardPage();
+        //     }
+        //     return LoginPage();
+        //   },
+        // )
+        );
   }
 }

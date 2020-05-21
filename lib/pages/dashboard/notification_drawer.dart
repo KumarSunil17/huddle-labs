@@ -28,23 +28,26 @@ class NotificationDrawer extends StatelessWidget {
           ),
           Expanded(
               child: StreamBuilder<QuerySnapshot>(
-            stream: notificationCollection
-                .where('userId', '==', fb.auth().currentUser.uid)
-                .onSnapshot,
+            stream: notificationCollection.onSnapshot,
             builder: (c, s) {
               if (s.hasError)
                 return HuddleErrorWidget(message: '${s.error.toString()}');
-              if (s.hasData)
+              if (s.hasData) {
+                final List<DocumentSnapshot> data = s.data.docs
+                    .where((element) =>
+                        element.data()['userId'] == fb.auth().currentUser.uid)
+                    .toList();
                 return ListView.builder(
-                  itemCount: s.data.docs.length,
+                  itemCount: data.length,
                   itemBuilder: (c, i) {
-                    if (s.data.docs[i].data()['read'] == false) {
-                      return NotificationCard.active(s.data.docs[i]);
+                    if (data[i].data()['read'] == false) {
+                      return NotificationCard.active(data[i]);
                     } else {
-                      return NotificationCard(s.data.docs[i]);
+                      return NotificationCard(data[i]);
                     }
                   },
                 );
+              }
               return HuddleLoader(
                 color: Theme.of(context).primaryColor,
               );

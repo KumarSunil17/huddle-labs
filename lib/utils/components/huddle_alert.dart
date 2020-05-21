@@ -37,6 +37,10 @@ class _HuddleDialogState extends State<HuddleAlert> {
       builder: (ctx) {
         if (mode == _DialogMode.alert) {
           return AlertDialog(
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: Text('${widget.alertTitle}'),
             actions: [
               FlatButton(
@@ -76,18 +80,26 @@ class _HuddleDialogState extends State<HuddleAlert> {
           );
         } else if (mode == _DialogMode.loading) {
           return AlertDialog(
-              title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 20),
-              Text(
-                "${widget.loadingTitle}",
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-            ],
-          ));
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 20),
+                  Text(
+                    "${widget.loadingTitle}"
+                  )
+                ],
+              ));
         } else {
           return AlertDialog(
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             title: Text('$completedText'),
           );
         }
