@@ -1,7 +1,7 @@
 import 'package:firebase/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase/firebase.dart' as fb;
-import 'package:huddlelabs/pages/dashboard/add_project_dialog.dart';
+import 'package:huddlelabs/pages/project/add_project_dialog.dart';
 import 'package:huddlelabs/pages/project/project_details_page.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
