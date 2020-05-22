@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:huddlelabs/pages/project/add_project_dialog.dart';
 import 'package:huddlelabs/pages/project/project_details_page.dart';
+import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:intl/intl.dart';
@@ -47,40 +48,41 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-   Widget yourProjectsList(count) => StreamBuilder<QuerySnapshot>(
-      stream: projectCollection.onSnapshot,
-      builder: (BuildContext context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(child: AddProjectCard());
-        } else {
-          final List<DocumentSnapshot> data = snapshot.data.docs
-              .where((element) =>
-                  element.data()['createdBy'] == fb.auth().currentUser.uid)
-              .toList();
-          return GridView.builder(
-              padding: const EdgeInsets.all(16),
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: count,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.4),
-              itemCount: data.length + 1,
-              itemBuilder: (c, i) {
-                if (i == 0) {
-                  return AddProjectCard();
-                } else
-                  return ProjectCard(data[i].id,
-                    createdAt: DateFormat('dd/MM/yyyy').format(
-                        DateTime.parse(data[i - 1].data()['createdAt'])),
-                    name: data[i - 1].data()['name'],
-                    desc: data[i - 1].data()['description'],
-                  );
-              });
-        }
-      },
-    );
+    Widget yourProjectsList(count) => StreamBuilder<QuerySnapshot>(
+          stream: projectCollection.onSnapshot,
+          builder: (BuildContext context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: AddProjectCard());
+            } else {
+              final List<DocumentSnapshot> data = snapshot.data.docs
+                  .where((element) =>
+                      element.data()['createdBy'] == fb.auth().currentUser.uid)
+                  .toList();
+              return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: count,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 1.4),
+                  itemCount: data.length + 1,
+                  itemBuilder: (c, i) {
+                    if (i == 0) {
+                      return AddProjectCard();
+                    } else
+                      return ProjectCard(
+                        data[i - 1].id,
+                        createdAt: DateFormat('dd/MM/yyyy').format(
+                            DateTime.parse(data[i - 1].data()['createdAt'])),
+                        name: data[i - 1].data()['name'],
+                        desc: data[i - 1].data()['description'],
+                      );
+                  });
+            }
+          },
+        );
     Widget assignedProjectsList(count) => StreamBuilder<QuerySnapshot>(
         stream: projectCollection.onSnapshot,
         builder: (BuildContext context, snapshot) {
@@ -104,7 +106,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     childAspectRatio: 1.4),
                 itemCount: data.length,
                 itemBuilder: (c, i) {
-                  return ProjectCard(data[i].id,
+                  return ProjectCard(
+                    data[i].id,
                     createdAt: DateFormat('dd/MM/yyyy')
                         .format(DateTime.parse(data[i].data()['createdAt'])),
                     name: data[i].data()['name'],
@@ -257,6 +260,18 @@ class _DashboardPageState extends State<DashboardPage> {
               height: MediaQuery.of(context).size.height / 2.5,
               color: Theme.of(context).primaryColor,
               width: double.infinity,
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Image.asset('assets/pic1.png', height: 200,),
+                    Spacer(),
+                    Image.asset('assets/pic2.png', height: 200,),
+                  ],
+                ),
+              ),
             ),
             ResponsiveWidget(
               largeScreen: largeScreen,
@@ -323,7 +338,8 @@ class AddProjectCard extends StatelessWidget {
 
 class ProjectCard extends StatelessWidget {
   final String name, desc, createdAt, projectId;
-  const ProjectCard(this.projectId,{this.createdAt: '', this.desc: '', this.name: ''});
+  const ProjectCard(this.projectId,
+      {this.createdAt: '', this.desc: '', this.name: ''});
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -332,7 +348,8 @@ class ProjectCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (c)=>ProjectDetailsPage(this.projectId)));
+          Navigator.push(
+              context, FadeRoute(page: ProjectDetailsPage(this.projectId)));
         },
         child: Padding(
           padding: const EdgeInsets.all(12),

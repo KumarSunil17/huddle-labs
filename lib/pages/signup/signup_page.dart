@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
 import 'package:huddlelabs/utils/components/huddle_extensions.dart';
@@ -42,8 +43,8 @@ class SignupPage extends StatelessWidget {
                           ),
                           Expanded(
                               flex: 3,
-                              child: SingleChildScrollView(
-                                  child: SignUpForm())),
+                              child:
+                                  SingleChildScrollView(child: SignUpForm())),
                           Spacer(
                             flex: 1,
                           ),
@@ -101,7 +102,7 @@ class SignupPage extends StatelessWidget {
     );
 
     return Scaffold(
-      body:ResponsiveWidget(
+      body: ResponsiveWidget(
           largeScreen: largeWidget,
           mediumScreen: largeWidget,
           smallScreen: smallWidget),
@@ -163,6 +164,8 @@ class _SignUpFormState extends State<SignUpForm> {
             // email
             TextFormField(
               keyboardType: TextInputType.emailAddress,
+              textCapitalization: TextCapitalization.none,
+              inputFormatters: [LowerCaseTextFormatter()],
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
                 prefixIcon: Icon(Icons.email),
@@ -216,8 +219,7 @@ class _SignUpFormState extends State<SignUpForm> {
               },
               isDense: true,
               validator: (value) {
-                if (value == null)
-                  return 'Gender is required.';
+                if (value == null) return 'Gender is required.';
                 return null;
               },
               decoration: InputDecoration(
@@ -247,7 +249,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 labelText: 'Password',
               ),
               onChanged: (value) {
-                  _password = value;
+                _password = value;
               },
               onSaved: (String value) {
                 _password = value;
@@ -327,27 +329,26 @@ class _SignUpFormState extends State<SignUpForm> {
       'gender': _gender.toInt,
       'createdAt': DateTime.now()
     };
-    fb.auth().createUserWithEmailAndPassword( _email.trim(), _password.trim())
+    fb
+        .auth()
+        .createUserWithEmailAndPassword(_email.trim(), _password.trim())
         .then((fb.UserCredential result) {
-        usersCollection
-            .doc(result.user.uid)
-            .set(data)
-            .then((value) {
-              showSnackbar('Sign up successful.', context);
-          Navigator.pushAndRemoveUntil(context,FadeRoute(page: DashboardPage()), (route) => false);
+      usersCollection.doc(result.user.uid).set(data).then((value) {
+        showSnackbar('Sign up successful.', context);
+        Navigator.pushAndRemoveUntil(
+            context, FadeRoute(page: DashboardPage()), (route) => false);
+        _buttonKey.currentState.hideLoader();
+      }).catchError((error) {
+        if (error is fb.FirebaseError) {
+          fb.auth().signOut();
+          showSnackbar('${error.message}', context);
           _buttonKey.currentState.hideLoader();
-        }).catchError((error) {
-          if (error is fb.FirebaseError) {
-            fb.auth().signOut();
-            showSnackbar('${error.message}',context);
-            _buttonKey.currentState.hideLoader();
-          } else {
-            print(error);
-          }
-        }).whenComplete(() {
-          _buttonKey.currentState.hideLoader();
-        });
-      
+        } else {
+          print(error);
+        }
+      }).whenComplete(() {
+        _buttonKey.currentState.hideLoader();
+      });
     }).catchError((error) {
       if (error is fb.FirebaseError) {
         showSnackbar('${error.message}', context);
@@ -386,6 +387,17 @@ class LoginWebBanner extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class LowerCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text?.toLowerCase(),
+      selection: newValue.selection,
     );
   }
 }

@@ -17,8 +17,8 @@ Future<void> main() async {
           messagingSenderId: "1059796789632",
           appId: "1:1059796789632:web:875b6fc2adcd21069cb965",
           measurementId: "G-99W9V396S5");
-  } catch (e) {
-    print(e);
+  } catch (e, s) {
+    print('$e,$s');
   }
 
   runApp(const MyApp());
@@ -45,8 +45,7 @@ class MyApp extends StatelessWidget {
           // accentColor: Color(0xFF005CEA),
           // scaffoldBackgroundColor: Color(0xFFF4F4FA)
         ),
-        home: 
-        Builder(
+        home: Builder(
           builder: (context) {
             fb.User user = fb.auth().currentUser;
             if (user != null && user.uid != null && user.uid.isNotEmpty) {
@@ -54,7 +53,6 @@ class MyApp extends StatelessWidget {
             }
             return LoginPage();
           },
-        )
-        );
+        ));
   }
 }

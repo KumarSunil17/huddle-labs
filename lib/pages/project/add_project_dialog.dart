@@ -356,6 +356,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
         });
       }).whenComplete(() {
         _buttonKey.currentState.hideLoader();
+        Navigator.pop(context);
       });
     } catch (e) {
       if (e is PlatformException)
@@ -476,19 +477,19 @@ class UserListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SelectableText(
+                  Text(
                     '$name',
                     style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
                         fontWeight: FontWeight.w600),
                   ),
-                  SelectableText(
+                  Text(
                     '$email',
                     style: TextStyle(color: Colors.black87),
                   ),
                   if (phone.isNotEmpty)
-                    SelectableText(
+                    Text(
                       '$phone',
                       style: TextStyle(color: Colors.black87, fontSize: 12),
                     ),
