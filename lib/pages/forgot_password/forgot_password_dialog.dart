@@ -11,7 +11,7 @@ class ForgotPasswordDialog extends StatelessWidget {
     String _email;
 
     _sendLink() {
-      if(_email.isNotEmpty){
+      if(_email!=null && _email.isNotEmpty){
    
       fb.auth().sendPasswordResetEmail(_email).then((value) {
         Navigator.pop(context, 'Reset email sent successfully.');
