@@ -1,7 +1,9 @@
 import 'package:firebase/firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:huddlelabs/pages/project/project_details_page.dart';
 import 'package:huddlelabs/utils/components/error_widget.dart';
 import 'package:huddlelabs/utils/components/huddle_loader.dart';
+import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:intl/intl.dart';
@@ -82,8 +84,15 @@ class NotificationCard extends StatelessWidget {
           notificationCollection
               .doc(notification.id)
               .update(data: {'read': true});
-
-          //TODO - Navigate to project details page
+          if (notification.data()['projectId'] == null ||
+              notification.data()['projectId'].toString().isEmpty) {
+            showSnackbar('You have no access to this project.', context);
+          } else
+            Navigator.push(
+                context,
+                FadeRoute(
+                    page:
+                        ProjectDetailsPage(notification.data()['projectId'])));
         },
         child: Padding(
           padding: const EdgeInsets.all(8),
@@ -94,15 +103,16 @@ class NotificationCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  StreamBuilder<DocumentSnapshot>(
-                    stream: projectCollection
-                        .doc(notification.data()['projectId'])
-                        .onSnapshot,
-                    builder: (c, s) => Text(
-                      s.hasData ? s.data.data()['name'] : '',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                  if (notification.data()['projectId'].isNotEmpty)
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: projectCollection
+                          .doc(notification.data()['projectId'])
+                          .onSnapshot,
+                      builder: (c, s) => Text(
+                        s.hasData ? s.data.data()['name'] : '',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
                     ),
-                  ),
                   Text(
                       '${DateFormat('dd MMM yyyy').format(DateTime.parse(notification.data()['createdAt']))}',
                       style: TextStyle(fontSize: 14, color: Colors.grey)),

@@ -7,6 +7,7 @@ import 'package:huddlelabs/utils/components/huddle_loader.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:huddlelabs/utils/enums.dart';
+import 'package:firebase/firebase.dart' as fb;
 
 class ProjectDetailsPage extends StatelessWidget {
   final String projectId;
@@ -67,19 +68,22 @@ class ProjectDetailsPage extends StatelessWidget {
                                               .textTheme
                                               .headline4
                                               .copyWith(color: Colors.black)),
-                                      FlatButton(
-                                        child: Text('Manage members',
-                                            style: TextStyle(fontSize: 16)),
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              FadeRoute(
-                                                  page: ManageMembersPagePage(
-                                                      projectId)));
-                                        },
-                                        textColor:
-                                            Theme.of(context).primaryColor,
-                                      )
+                                      if (projectSnapshot.data
+                                              .data()['createdBy'] ==
+                                          fb.auth().currentUser.uid)
+                                        FlatButton(
+                                          child: Text('Manage members',
+                                              style: TextStyle(fontSize: 16)),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                FadeRoute(
+                                                    page: ManageMembersPagePage(
+                                                        projectId)));
+                                          },
+                                          textColor:
+                                              Theme.of(context).primaryColor,
+                                        )
                                     ],
                                   ),
                                   SizedBox(

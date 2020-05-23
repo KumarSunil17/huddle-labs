@@ -63,7 +63,10 @@ class TaskCard extends StatelessWidget {
                     Row(children: [
                       Material(
                         borderRadius: BorderRadius.circular(6),
-                        child: Text('Deadline'),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Text('Deadline'),
+                        ),
                       ),
                       Spacer(),
                       Tooltip(

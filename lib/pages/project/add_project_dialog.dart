@@ -25,7 +25,10 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
     super.initState();
     _desc = TextEditingController();
     _title = TextEditingController();
-    _searchController = TextEditingController();
+    _searchController = TextEditingController()
+      ..addListener(() {
+        setState(() {});
+      });
   }
 
   @override
@@ -44,13 +47,19 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
         if (snapshot.hasError)
           return HuddleErrorWidget(message: '${snapshot.error.toString()}');
         if (snapshot.hasData) {
+          if (_searchController.text.trim().isEmpty)
+            return HuddleErrorWidget(
+              message: 'Type keyword to search user...',
+            );
           final List<DocumentSnapshot> data = snapshot.data.docs
               .where((element) =>
                   element
                       .data()['name']
                       .toString()
-                      .contains(_searchController.text.trim().toLowerCase()) &&
-                  element.id != fb.auth().currentUser.uid)
+                      .contains(_searchController.text.trim().toLowerCase()) ||
+                  element.data()['email'].toString().contains(
+                          _searchController.text.trim().toLowerCase()) &&
+                      element.id != fb.auth().currentUser.uid)
               .toList();
           if (data.isEmpty) {
             return HuddleErrorWidget(message: 'No users found.');
@@ -136,6 +145,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                       child: ListView.builder(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           scrollDirection: Axis.vertical,
+                          reverse: true,
                           itemCount: _selectedUsers.length,
                           itemBuilder: (c, index) => SmallUserWidget(
                               avatar: _selectedUsers[index].data()['photo'],
@@ -160,6 +170,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       child: TextField(
+                        controller: _searchController,
                         decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(),
                             border: OutlineInputBorder(),
@@ -169,9 +180,8 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                     ),
                     Flexible(flex: 5, child: _allUsersList),
                     Flexible(
-                      flex: 1,
-                      child: Row(
-                        children: [
+                        flex: 1,
+                        child: Row(children: [
                           Spacer(flex: 2),
                           Container(
                             alignment: Alignment.topRight,
@@ -182,9 +192,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                               onPressed: _addProject,
                             ),
                           ),
-                        ],
-                      ),
-                    )
+                        ]))
                   ],
                 ))),
       ],
@@ -242,6 +250,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               scrollDirection: Axis.horizontal,
               itemCount: _selectedUsers.length,
+              reverse: true,
               itemBuilder: (c, index) => SmallUserWidget(
                   avatar: _selectedUsers[index].data()['photo'],
                   name: _selectedUsers[index].data()['name'],
@@ -414,6 +423,11 @@ class SmallUserWidget extends StatelessWidget {
                     ),
                     fillColor: Colors.red,
                   ),
+                if (onDelete == null)
+                  Text(
+                    'You',
+                    style: TextStyle(color: Colors.black54, fontSize: 18),
+                  )
               ],
             ),
             SizedBox(height: 8),
