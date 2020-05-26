@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:huddlelabs/pages/project/manage_members_page_page.dart';
 import 'package:huddlelabs/pages/project/project_graphs.dart';
 import 'package:huddlelabs/pages/project/project_task_widget.dart';
+import 'package:huddlelabs/pages/task/add_task_dialog.dart';
 import 'package:huddlelabs/utils/components/huddle_loader.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/constants.dart';
@@ -143,22 +144,28 @@ class ProjectDetailsPage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: TaskWidget(
-                                onAddTask: () {},
-                                tasks: [],
+                                onAddTask: () =>
+                                  _addTask(context, TaskStatus.created.toInt),
                                 title: TaskStatus.created.toTaskString,
+                                status: TaskStatus.created.toInt,
+                                projectId: projectId,
                               ),
                             ),
                             Expanded(
                               child: TaskWidget(
-                                onAddTask: () {},
-                                tasks: [],
+                                onAddTask: () =>
+                                    _addTask(context, TaskStatus.running.toInt),
+                                status: TaskStatus.running.toInt,
+                                projectId: projectId,
                                 title: TaskStatus.running.toTaskString,
                               ),
                             ),
                             Expanded(
                               child: TaskWidget(
-                                onAddTask: () {},
-                                tasks: [],
+                                onAddTask: () =>
+                                    _addTask(context, TaskStatus.submitted.toInt),
+                                status: TaskStatus.submitted.toInt,
+                                projectId: projectId,
                                 title: TaskStatus.submitted.toTaskString,
                               ),
                             ),
@@ -217,5 +224,26 @@ class ProjectDetailsPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void _addTask(BuildContext context, int status) {
+    showGeneralDialog(
+        barrierDismissible: true,
+        barrierLabel: 'add-task-dialog',
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionBuilder: (context, a1, a2, widget) {
+          return Transform.scale(
+            scale: a1.value,
+            child: Opacity(opacity: a1.value, child: widget),
+          );
+        },
+        transitionDuration: Duration(milliseconds: 300),
+        context: context,
+        pageBuilder: (context, animation1, animation2) {
+          return AddTaskDialog(
+            projectId: projectId,
+            status: status,
+          );
+        });
   }
 }
