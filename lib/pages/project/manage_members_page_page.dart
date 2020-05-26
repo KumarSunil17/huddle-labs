@@ -83,7 +83,7 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                                 return StreamBuilder<DocumentSnapshot>(
                                   stream: usersCollection
                                       .doc(members[i])
-                                      .onMetadataChangesSnapshot,
+                                      .onSnapshot,
                                   builder: (BuildContext context, userSnap) {
                                     if (userSnap.hasData) {
                                       if (members[i] ==
