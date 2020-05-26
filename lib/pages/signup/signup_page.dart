@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
 import 'package:huddlelabs/utils/components/huddle_extensions.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
+import 'package:huddlelabs/utils/components/huddle_scaffold.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:firebase/firestore.dart';
-import 'package:huddlelabs/utils/enums.dart';
 
 class SignupPage extends StatelessWidget {
   static const String routeName = '/signup';
+  final GlobalKey<HuddleScaffoldState> _scaffoldKey =
+      GlobalKey<HuddleScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +44,8 @@ class SignupPage extends StatelessWidget {
                           ),
                           Expanded(
                               flex: 3,
-                              child:
-                                  SingleChildScrollView(child: SignUpForm())),
+                              child: SingleChildScrollView(
+                                  child: SignUpForm(_scaffoldKey))),
                           Spacer(
                             flex: 1,
                           ),
@@ -94,23 +95,27 @@ class SignupPage extends StatelessWidget {
             child: SimpleDialog(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 60, vertical: 40),
-              children: [SignUpForm()],
+              children: [SignUpForm(_scaffoldKey)],
             ),
           ),
         ),
       ],
     );
 
-    return Scaffold(
-      body: ResponsiveWidget(
+    return HuddleScaffold(
+      ResponsiveWidget(
           largeScreen: largeWidget,
           mediumScreen: largeWidget,
           smallScreen: smallWidget),
+      key: _scaffoldKey,
     );
   }
 }
 
 class SignUpForm extends StatefulWidget {
+  final GlobalKey<HuddleScaffoldState> _scaffoldKey;
+  SignUpForm(this._scaffoldKey);
+
   @override
   _SignUpFormState createState() => _SignUpFormState();
 }
@@ -119,8 +124,7 @@ class _SignUpFormState extends State<SignUpForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<HuddleButtonState> _buttonKey =
       GlobalKey<HuddleButtonState>();
-  String _email, _password, _name, _phone;
-  Gender _gender;
+  String _email, _password, _name, _phone, _gender;
   bool _autovalidate = false;
   bool _visible = true;
   @override
@@ -164,8 +168,6 @@ class _SignUpFormState extends State<SignUpForm> {
             // email
             TextFormField(
               keyboardType: TextInputType.emailAddress,
-              textCapitalization: TextCapitalization.none,
-              inputFormatters: [LowerCaseTextFormatter()],
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
                 prefixIcon: Icon(Icons.email),
@@ -204,11 +206,11 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
             SizedBox(height: 15),
             //gender
-            DropdownButtonFormField<Gender>(
+            DropdownButtonFormField(
               elevation: 2,
-              items: Gender.values
+              items: ['Male', 'Female', 'Others', 'Not to say']
                   .map((e) => DropdownMenuItem(
-                        child: Text(e.toGenderString),
+                        child: Text(e),
                         value: e,
                       ))
                   .toList(),
@@ -219,7 +221,8 @@ class _SignUpFormState extends State<SignUpForm> {
               },
               isDense: true,
               validator: (value) {
-                if (value == null) return 'Gender is required.';
+                if (value == null || value.isEmpty)
+                  return 'Gender is required.';
                 return null;
               },
               decoration: InputDecoration(
@@ -249,7 +252,9 @@ class _SignUpFormState extends State<SignUpForm> {
                 labelText: 'Password',
               ),
               onChanged: (value) {
-                _password = value;
+                setState(() {
+                  _password = value;
+                });
               },
               onSaved: (String value) {
                 _password = value;
@@ -323,35 +328,41 @@ class _SignUpFormState extends State<SignUpForm> {
   _doSignUp() {
     _buttonKey.currentState.showLoader();
     Map<String, dynamic> data = {
-      'name': _name.trim(),
-      'email': _email.trim(),
-      'phone': _phone.trim(),
-      'gender': _gender.toInt,
+      'name': _name,
+      'email': _email,
+      'phone': _phone,
+      'gender': _gender,
       'createdAt': DateTime.now()
     };
-    fb
-        .auth()
-        .createUserWithEmailAndPassword(_email.trim(), _password.trim())
+    fb.auth().createUserWithEmailAndPassword( _email, _password)
         .then((fb.UserCredential result) {
-      usersCollection.doc(result.user.uid).set(data).then((value) {
-        showSnackbar('Sign up successful.', context);
-        Navigator.pushAndRemoveUntil(
-            context, FadeRoute(page: DashboardPage()), (route) => false);
-        _buttonKey.currentState.hideLoader();
-      }).catchError((error) {
-        if (error is fb.FirebaseError) {
-          fb.auth().signOut();
-          showSnackbar('${error.message}', context);
+      final Firestore firestore = fb.firestore();
+      if (firestore != null) {
+        firestore
+            .collection('users')
+            .doc(result.user.uid)
+            .set(data)
+            .then((value) {
+          widget._scaffoldKey.currentState
+              .showErrorSnackBar('Sign up successful.');
+          Navigator.pushReplacement(context, FadeRoute(page: DashboardPage()));
           _buttonKey.currentState.hideLoader();
-        } else {
-          print(error);
-        }
-      }).whenComplete(() {
-        _buttonKey.currentState.hideLoader();
-      });
+        }).catchError((error) {
+          if (error is fb.FirebaseError) {
+            fb.auth().signOut();
+            widget._scaffoldKey.currentState
+                .showErrorSnackBar('${error.message}');
+            _buttonKey.currentState.hideLoader();
+          } else {
+            print(error);
+          }
+        }).whenComplete(() {
+          _buttonKey.currentState.hideLoader();
+        });
+      }
     }).catchError((error) {
       if (error is fb.FirebaseError) {
-        showSnackbar('${error.message}', context);
+        widget._scaffoldKey.currentState.showErrorSnackBar('${error.message}');
         _buttonKey.currentState.hideLoader();
       } else {
         print(error);
@@ -387,17 +398,6 @@ class LoginWebBanner extends StatelessWidget {
           )
         ],
       ),
-    );
-  }
-}
-
-class LowerCaseTextFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    return TextEditingValue(
-      text: newValue.text?.toLowerCase(),
-      selection: newValue.selection,
     );
   }
 }

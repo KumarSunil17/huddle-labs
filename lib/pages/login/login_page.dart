@@ -1,5 +1,4 @@
 import 'package:firebase/firebase.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
@@ -8,11 +7,15 @@ import 'package:huddlelabs/pages/signup/signup_page.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
 import 'package:huddlelabs/utils/components/huddle_extensions.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
+import 'package:huddlelabs/utils/components/huddle_scaffold.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
 
 class LoginPage extends StatelessWidget {
   static const String routeName = '/login';
+
+  final GlobalKey<HuddleScaffoldState> _scaffoldKey =
+      GlobalKey<HuddleScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class LoginPage extends StatelessWidget {
                           Spacer(
                             flex: 1,
                           ),
-                          Expanded(flex: 3, child: LoginForm()),
+                          Expanded(flex: 3, child: LoginForm(_scaffoldKey)),
                           Spacer(
                             flex: 1,
                           ),
@@ -92,22 +95,26 @@ class LoginPage extends StatelessWidget {
             child: SimpleDialog(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 60, vertical: 40),
-              children: [LoginForm()],
+              children: [LoginForm(_scaffoldKey)],
             ),
           ),
         ),
       ],
     );
-    return Scaffold(
-      body: ResponsiveWidget(
+    return HuddleScaffold(
+      ResponsiveWidget(
           largeScreen: largeWidget,
           mediumScreen: largeWidget,
           smallScreen: smallWidget),
+      key: _scaffoldKey,
     );
   }
 }
 
 class LoginForm extends StatefulWidget {
+  final GlobalKey<HuddleScaffoldState> _scaffoldKey;
+  LoginForm(this._scaffoldKey);
+
   @override
   _LoginFormState createState() => _LoginFormState();
 }
@@ -204,7 +211,7 @@ class _LoginFormState extends State<LoginForm> {
                         return ForgotPasswordDialog();
                       }).then((value) {
                     if (value != null) {
-                      showSnackbar(value, context);
+                      widget._scaffoldKey.currentState.showErrorSnackBar(value);
                     }
                   });
                 },
@@ -252,13 +259,12 @@ class _LoginFormState extends State<LoginForm> {
     auth()
         .signInWithEmailAndPassword(_email, _password)
         .then((UserCredential result) {
-      showSnackbar('Sign in successful.', context);
+      widget._scaffoldKey.currentState.showErrorSnackBar('Sign in successful.');
 
-      Navigator.pushAndRemoveUntil(
-          context, FadeRoute(page: DashboardPage()), (route) => false);
+      Navigator.pushReplacement(context, FadeRoute(page: DashboardPage()));
     }).catchError((error) {
       if (error is FirebaseError) {
-        showSnackbar('${error.message}', context);
+        widget._scaffoldKey.currentState.showErrorSnackBar('${error.message}');
       } else {
         print(error);
       }
