@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="8d8aad82-b7b5-4553-9434-575d6f4894e9" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.dart_tool/chrome-device/Default/preferences" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/chrome-device/Default/preferences" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/dashboard/components/dashboard_chart/chart/bar_chart/bar_chart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/dashboard/components/dashboard_chart/chart/bar_chart/bar_chart.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/dashboard/components/dashboard_chart/dashboard_chart.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/dashboard/components/dashboard_chart/dashboard_chart.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/dashboard/components/profile_drawer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/dashboard/components/profile_drawer.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/dashboard/dashboard_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/dashboard/dashboard_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/login/login_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/login/login_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/signup/signup_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/signup/signup_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/flutter_assets/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/build/flutter_assets/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/huddlelabs.iml" beforeDir="false" afterPath="$PROJECT_DIR$/huddlelabs.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/project/project_details_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/project/project_details_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/project/project_task_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/project/project_task_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/task/add_task_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/task/add_task_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,8 +26,14 @@
     <option name="testRunner" value="GRADLE" />
     <option name="delegatedBuild" value="true" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_3a_API_R" />
   <component name="FlutterPreviewView" splitter-proportion="0.5985748" />
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1YnmJJTDmZczXspAGMCUxKqach7" />
@@ -75,7 +83,14 @@
       <option name="project" value="LOCAL" />
       <updated>1584192578443</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="initial commit">
+      <created>1590244565139</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1590244565139</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -94,6 +109,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial" />
     <MESSAGE value="dashboard graph initial" />
-    <option name="LAST_COMMIT_MESSAGE" value="dashboard graph initial" />
+    <MESSAGE value="initial commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
   </component>
 </project>
