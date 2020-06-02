@@ -45,14 +45,15 @@ class MyApp extends StatelessWidget {
           // accentColor: Color(0xFF005CEA),
           // scaffoldBackgroundColor: Color(0xFFF4F4FA)
         ),
-        home: Builder(
-          builder: (context) {
-            fb.User user = fb.auth().currentUser;
-            if (user != null && user.uid != null && user.uid.isNotEmpty) {
-              return DashboardPage();
-            }
-            return LoginPage();
-          },
-        ));
+        home: ProjectDetailsPage('4A9IN5PBVr1ZiAtyd5bs'));
+        //     Builder(
+        //   builder: (context) {
+        //     fb.User user = fb.auth().currentUser;
+        //     if (user != null && user.uid != null && user.uid.isNotEmpty) {
+        //       return DashboardPage();
+        //     }
+        //     return LoginPage();
+        //   },
+        // ));
   }
 }
