@@ -1,7 +1,6 @@
 import 'package:firebase/firebase.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
-import 'package:huddlelabs/utils/components/huddle_extensions.dart';
 
 class ForgotPasswordDialog extends StatelessWidget {
   static const String routeName = '/forgotPassword';
@@ -45,7 +44,7 @@ class ForgotPasswordDialog extends StatelessWidget {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Icon(Icons.close, color: Colors.white, size: 15),
-          ).showCursorOnHover
+          )
         ],
       ),
       children: <Widget>[

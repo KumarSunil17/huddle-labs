@@ -257,22 +257,33 @@ class _DashboardPageState extends State<DashboardPage> {
           overflow: Overflow.visible,
           children: [
             Container(
-              height: MediaQuery.of(context).size.height / 2.5,
-              color: Theme.of(context).primaryColor,
-              width: double.infinity,
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Image.asset('assets/pic1.png', height: 200,),
-                    Spacer(),
-                    Image.asset('assets/pic2.png', height: 200,),
-                  ],
-                ),
-              ),
-            ),
+                height: MediaQuery.of(context).size.height / 2.5,
+                color: Theme.of(context).primaryColor,
+                width: double.infinity,
+                alignment: Alignment.bottomCenter,
+                child: LayoutBuilder(
+                  builder: (c, constraints) {
+                    if (constraints.maxWidth > 800)
+                      return Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Image.asset(
+                              'assets/pic1.png',
+                              height: 200,
+                            ),
+                            Spacer(),
+                            Image.asset(
+                              'assets/pic2.png',
+                              height: 200,
+                            ),
+                          ],
+                        ),
+                      );
+                    return Container();
+                  },
+                )),
             ResponsiveWidget(
               largeScreen: largeScreen,
               mediumScreen: mediumScreen,

@@ -90,7 +90,6 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
     return Dialog(
         clipBehavior: Clip.antiAlias,
         insetPadding: const EdgeInsets.all(54),
-        useMaterialBorderRadius: true,
         child: StreamBuilder<DocumentSnapshot>(
           stream: taskCollection.doc(widget.taskId).onSnapshot,
           builder: (c, snapshot) => snapshot.hasData

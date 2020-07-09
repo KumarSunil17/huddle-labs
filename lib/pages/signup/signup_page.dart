@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
-import 'package:huddlelabs/utils/components/huddle_extensions.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase/firestore.dart';
 import 'package:huddlelabs/utils/enums.dart';
 
 class SignupPage extends StatelessWidget {
@@ -83,10 +81,10 @@ class SignupPage extends StatelessWidget {
           top: 20,
           child: Text(
             'Huddle labs',
-            style: Theme.of(context)
-                .textTheme
-                .headline5
-                .copyWith(fontFamily: 'PoorRich', letterSpacing: 1.3),
+            style: Theme.of(context).textTheme.headline5.copyWith(
+                fontFamily: 'PoorRich',
+                color: Colors.white,
+                letterSpacing: 1.3),
           ),
         ),
         Positioned.fill(
@@ -301,19 +299,20 @@ class _SignUpFormState extends State<SignUpForm> {
                   _doSignUp();
                 }
               },
-            ).showCursorOnHover,
+            ),
             SizedBox(height: 20),
-            Wrap(
+            Row(mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('Already have an account? '),
-                GestureDetector(
+                InkWell(
+                  splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
                     onTap: () {
                       Navigator.pop(context);
                     },
                     child: Text('Sign in',
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor))
-                        .showCursorOnHover)
+                        style:
+                            TextStyle(color: Theme.of(context).primaryColor)))
               ],
             ),
           ],

@@ -1,14 +1,9 @@
 import 'package:firebase/firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:huddlelabs/pages/login/login_page.dart';
 import 'package:huddlelabs/utils/components/error_widget.dart';
-import 'package:huddlelabs/utils/components/huddle_alert.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
 import 'package:huddlelabs/utils/components/huddle_loader.dart';
-import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/constants.dart';
-import 'package:firebase/firebase.dart' as fb;
-import 'package:huddlelabs/utils/enums.dart';
 import 'dart:html' as html;
 
 class OtherProfileWidget extends StatelessWidget {

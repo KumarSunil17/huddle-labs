@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase/firebase.dart' as fb;
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/pages/login/login_page.dart';
-import 'package:huddlelabs/pages/project/project_details_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        title: 'Huddle Labs',
         debugShowCheckedModeBanner: false,
         darkTheme: ThemeData(
           fontFamily: 'Lato',

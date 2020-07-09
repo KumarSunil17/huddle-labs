@@ -1,5 +1,6 @@
 import 'package:firebase/firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:huddlelabs/pages/dashboard/components/profile_dialog.dart';
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/pages/dashboard/notification_drawer.dart';
@@ -13,7 +14,6 @@ import 'package:huddlelabs/utils/components/huddle_loader.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:huddlelabs/utils/enums.dart';
-import 'package:firebase/firebase.dart' as fb;
 
 class ProjectDetailsPage extends StatelessWidget {
   final String projectId;
@@ -93,13 +93,14 @@ class ProjectDetailsPage extends StatelessWidget {
               child: SizedBox(
                 width: 1530,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 32, top: 32, right: 16),
+                  padding: const EdgeInsets.only(left: 32, right: 16),
                   child: Row(
                     children: [
                       Expanded(
                         flex: 4,
                         child: Column(
                           children: [
+                            SizedBox(height: 32),
                             Expanded(
                               flex: 3,
                               child: StreamBuilder<QuerySnapshot>(
@@ -430,83 +431,101 @@ class ProjectDetailsPage extends StatelessWidget {
                       SizedBox(width: 12),
                       Expanded(
                         flex: 1,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Transactions',
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Expanded(
-                              child: StreamBuilder<QuerySnapshot>(
-                                stream: transactionCollection
-                                    .orderBy('createdAt', 'desc')
-                                    .onSnapshot,
-                                builder: (c, s) {
-                                  if (s.hasData) {
-                                    final List<DocumentSnapshot> data = s
-                                        .data.docs
-                                        .where((element) =>
-                                            element.data()['projectId'] ==
-                                            projectId)
-                                        .toList();
-                                    return ListView(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8),
-                                      children: List.generate(
-                                          data.length,
-                                          (index) => ListTile(
-                                                onTap: data[index]
-                                                            .data()['taskId'] ==
-                                                        null
-                                                    ? null
-                                                    : () {
-                                                        showGeneralDialog(
-                                                          barrierLabel:
-                                                              "task-details",
-                                                          barrierDismissible:
-                                                              true,
-                                                          context: context,
-                                                          barrierColor: Colors
-                                                              .black
-                                                              .withOpacity(0.5),
-                                                          transitionDuration:
-                                                              Duration(
-                                                                  milliseconds:
-                                                                      300),
-                                                          pageBuilder: (context,
-                                                                  anim1,
-                                                                  anim2) =>
-                                                              TaskDetailsDialog(
-                                                                  data[index]
-                                                                          .data()[
-                                                                      'taskId']),
-                                                        );
-                                                      },
-                                                hoverColor: data[index]
-                                                            .data()['taskId'] ==
-                                                        null
-                                                    ? null
-                                                    : Colors.blueAccent
-                                                        .withOpacity(0.5),
-                                                contentPadding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 16,
-                                                        vertical: 0),
-                                                title: Text(
-                                                    '${data[index].data()['message']}'),
-                                              )),
-                                    );
-                                  }
-                                  return HuddleLoader(
-                                      color: Theme.of(context).primaryColor);
-                                },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black26,
+                                    offset: Offset(-2, 0),
+                                    blurRadius: 2)
+                              ]),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Transactions',
+                                style: Theme.of(context).textTheme.headline6,
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Expanded(
+                                child: StreamBuilder<QuerySnapshot>(
+                                  stream: transactionCollection
+                                      .orderBy('createdAt', 'desc')
+                                      .onSnapshot,
+                                  builder: (c, s) {
+                                    if (s.hasData) {
+                                      final List<DocumentSnapshot> data = s
+                                          .data.docs
+                                          .where((element) =>
+                                              element.data()['projectId'] ==
+                                              projectId)
+                                          .toList();
+                                      return ListView(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
+                                        children: List.generate(
+                                            data.length,
+                                            (index) => ListTile(
+                                                  onTap:
+                                                      data[index].data()[
+                                                                  'taskId'] ==
+                                                              null
+                                                          ? null
+                                                          : () {
+                                                              showGeneralDialog(
+                                                                barrierLabel:
+                                                                    "task-details",
+                                                                barrierDismissible:
+                                                                    true,
+                                                                context:
+                                                                    context,
+                                                                barrierColor: Colors
+                                                                    .black
+                                                                    .withOpacity(
+                                                                        0.5),
+                                                                transitionDuration:
+                                                                    Duration(
+                                                                        milliseconds:
+                                                                            300),
+                                                                pageBuilder: (context,
+                                                                        anim1,
+                                                                        anim2) =>
+                                                                    TaskDetailsDialog(
+                                                                        data[index]
+                                                                            .data()['taskId']),
+                                                              );
+                                                            },
+                                                  hoverColor:
+                                                      data[index].data()[
+                                                                  'taskId'] ==
+                                                              null
+                                                          ? null
+                                                          : Colors.blueAccent
+                                                              .withOpacity(0.5),
+                                                  mouseCursor:
+                                                      data[index].data()[
+                                                                  'taskId'] ==
+                                                              null
+                                                          ? MouseCursor.defer
+                                                          : null,
+                                                  contentPadding:
+                                                      const EdgeInsets.all(0),
+                                                  title: Text(
+                                                      '${data[index].data()['message']}'),
+                                                )),
+                                      );
+                                    }
+                                    return HuddleLoader(
+                                        color: Theme.of(context).primaryColor);
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     ],

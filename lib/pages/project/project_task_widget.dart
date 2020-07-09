@@ -1,7 +1,6 @@
 import 'package:firebase/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:huddlelabs/pages/dashboard/components/other_profile_dialog.dart';
-import 'package:huddlelabs/pages/dashboard/components/profile_dialog.dart';
 import 'package:huddlelabs/pages/task/task_details_dialog_page.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:huddlelabs/utils/enums.dart';
