@@ -7,7 +7,6 @@ import 'package:huddlelabs/utils/components/huddle_loader.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:firebase/firebase.dart' as fb;
-
 class AddProjectDialog extends StatefulWidget {
   @override
   _AddProjectDialogState createState() => _AddProjectDialogState();
@@ -66,6 +65,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
           }
           return ListView.builder(
             itemCount: data.length,
+            shrinkWrap: true,
             itemBuilder: (c, index) => UserListTile(
               avatar: data[index].data()['photo'],
               name: data[index].data()['name'],
@@ -184,7 +184,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                         child: Row(children: [
                           Spacer(flex: 2),
                           Container(
-                            alignment: Alignment.topRight,
+                            alignment: Alignment.bottomRight,
                             height: 54,
                             child: HuddleButton(
                               text: 'Add project',
@@ -277,7 +277,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
         children: [
           Spacer(flex: 2),
           Container(
-            alignment: Alignment.topRight,
+            alignment: Alignment.bottomRight,
             height: 54,
             child: HuddleButton(
               text: 'Add project',

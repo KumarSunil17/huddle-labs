@@ -37,3 +37,39 @@ showSnackbar(String message, BuildContext context) {
         LinearGradient(colors: [Color(0xff6a11cb), Color(0xff2575fc)]),
   )..show(context);
 }
+
+Color getDeadlineColor(String dateString) {
+  try {
+    final DateTime dateTime = DateTime.parse(dateString);
+    final DateTime current = DateTime.now();
+    final days = dateTime.difference(current).inDays;
+    if (days.isNegative) {
+      return Color(0xffcf0000);
+    } else if (days == 0) {
+      return Color(0xffFF7F00);
+    } else {
+      return Color(0xff00cf00);
+    }
+  } catch (e) {
+    print(e);
+    return Colors.grey;
+  }
+}
+
+String getDeadlineString(String dateString) {
+  try {
+    final DateTime dateTime = DateTime.parse(dateString);
+    final DateTime current = DateTime.now();
+    final days = dateTime.difference(current).inDays;
+    if (days.isNegative) {
+      return 'This task is past dued.';
+    } else if (days == 0) {
+      return 'This task will expire today.';
+    } else {
+      return 'This task will expire in $days days.';
+    }
+  } catch (e) {
+    print(e);
+    return 'Some error occurred.';
+  }
+}

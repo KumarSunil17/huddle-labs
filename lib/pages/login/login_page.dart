@@ -1,12 +1,10 @@
 import 'package:firebase/firebase.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:huddlelabs/pages/dashboard/dashboard_page.dart';
 import 'package:huddlelabs/pages/forgot_password/forgot_password_dialog.dart';
 import 'package:huddlelabs/pages/signup/signup_page.dart';
 import 'package:huddlelabs/utils/components/huddle_button.dart';
-import 'package:huddlelabs/utils/components/huddle_extensions.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
@@ -81,10 +79,10 @@ class LoginPage extends StatelessWidget {
           top: 20,
           child: Text(
             'Huddle labs',
-            style: Theme.of(context)
-                .textTheme
-                .headline5
-                .copyWith(fontFamily: 'PoorRich', letterSpacing: 1.3),
+            style: Theme.of(context).textTheme.headline5.copyWith(
+                fontFamily: 'PoorRich',
+                color: Colors.white,
+                letterSpacing: 1.3),
           ),
         ),
         Positioned.fill(
@@ -211,7 +209,7 @@ class _LoginFormState extends State<LoginForm> {
                 child: Text(
                   'Forgot password?',
                   style: TextStyle(color: Theme.of(context).primaryColor),
-                ).showCursorOnHover,
+                ),
               ),
             ),
             SizedBox(height: 30),
@@ -228,19 +226,21 @@ class _LoginFormState extends State<LoginForm> {
                   _doLogin();
                 }
               },
-            ).showCursorOnHover,
+            ),
             SizedBox(height: 50),
-            Wrap(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('Don\'t have an account? '),
-                GestureDetector(
+                InkWell(
                     onTap: () {
                       Navigator.push(context, FadeRoute(page: SignupPage()));
                     },
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
                     child: Text('Sign up',
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor))
-                        .showCursorOnHover)
+                        style:
+                            TextStyle(color: Theme.of(context).primaryColor)))
               ],
             ),
           ],

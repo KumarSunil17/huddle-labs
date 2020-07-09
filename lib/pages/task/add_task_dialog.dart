@@ -19,11 +19,10 @@ class AddTaskDialog extends StatefulWidget {
 }
 
 class _AddTaskDialogState extends State<AddTaskDialog> {
-
   TextEditingController _searchController;
   DocumentSnapshot assignedTo;
   final GlobalKey<HuddleButtonState> _buttonKey =
-  GlobalKey<HuddleButtonState>();
+      GlobalKey<HuddleButtonState>();
   TextEditingController _title, _desc;
   String _dateStr = 'Due Date*';
   DateTime _dueDate;
@@ -67,14 +66,19 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
           }
 
           return ListView.builder(
-                    itemCount: membersList.length,
-                    itemBuilder: (c, index) => StreamBuilder<DocumentSnapshot>(
-                      stream: usersCollection.doc(membersList[index]).onSnapshot,
-                      builder: (BuildContext ctx, userSnapshot){
-                        if(userSnapshot.hasData){
-                          String str =_searchController.text.trim().toLowerCase();
-                          if (userSnapshot.data.data()['name'].toString().toLowerCase().contains(str)) {
-                            return UserListTile(
+              itemCount: membersList.length,
+              itemBuilder: (c, index) => StreamBuilder<DocumentSnapshot>(
+                    stream: usersCollection.doc(membersList[index]).onSnapshot,
+                    builder: (BuildContext ctx, userSnapshot) {
+                      if (userSnapshot.hasData) {
+                        String str =
+                            _searchController.text.trim().toLowerCase();
+                        if (userSnapshot.data
+                            .data()['name']
+                            .toString()
+                            .toLowerCase()
+                            .contains(str)) {
+                          return UserListTile(
                             avatar: userSnapshot.data.data()['photo'],
                             name: userSnapshot.data.data()['name'],
                             email: userSnapshot.data.data()['email'],
@@ -84,15 +88,14 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                               });
                             },
                           );
-                          }else{
-                            return Container();
-                          }
-                        }else{
+                        } else {
                           return Container();
                         }
-                      },
-                    )
-                  );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ));
         } else {
           return HuddleLoader(color: Theme.of(context).primaryColor);
         }
@@ -118,6 +121,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                           child: TextFormField(
                               cursorColor: Color(0xff636363),
                               cursorWidth: 2.6,
+                              autofocus: true,
                               controller: _title,
                               scrollPhysics: BouncingScrollPhysics(),
                               decoration: InputDecoration(
@@ -144,8 +148,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                                 scrollPhysics: BouncingScrollPhysics(),
                                 decoration: InputDecoration(
                                   contentPadding: const EdgeInsets.all(8),
-                                  hintText:
-                                  'Describe the task*',
+                                  hintText: 'Describe the task*',
                                   border: InputBorder.none,
                                 ),
                                 style: Theme.of(context)
@@ -157,11 +160,9 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                           onTap: () => _selectDate(context),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.05),
-                              border: Border.all(
-                                color: Colors.grey.withOpacity(0.05)
-                              )
-                            ),
+                                color: Colors.grey.withOpacity(0.05),
+                                border: Border.all(
+                                    color: Colors.grey.withOpacity(0.05))),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 4, vertical: 6),
                             width: 230,
@@ -169,9 +170,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                               _dateStr == 'Due Date*'
                                   ? _dateStr
                                   : 'Due Date: $_dateStr',
-                              style: TextStyle(
-                                  fontSize: 20
-                              ),
+                              style: TextStyle(fontSize: 20),
                             ),
                           ),
                         ),
@@ -186,12 +185,14 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                               .copyWith(color: Colors.black),
                         ),
                         SizedBox(height: 8),
-                        assignedTo != null ? SmallUserWidget(
-                          avatar: assignedTo.data()['photo'],
-                          name: assignedTo.data()['name'],
-                          email: assignedTo.data()['email'],
-                          onDelete: () => setState(() => assignedTo = null)
-                        ) : Container(),
+                        assignedTo != null
+                            ? SmallUserWidget(
+                                avatar: assignedTo.data()['photo'],
+                                name: assignedTo.data()['name'],
+                                email: assignedTo.data()['email'],
+                                onDelete: () =>
+                                    setState(() => assignedTo = null))
+                            : Container(),
                         SizedBox(
                           height: 8,
                         ),
@@ -245,11 +246,9 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: DateTime(
-            DateTime.now().year, DateTime.now().month,
-            DateTime.now().day + 1),
+            DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
         firstDate: DateTime(
-            DateTime.now().year, DateTime.now().month,
-            DateTime.now().day + 1),
+            DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
         lastDate: DateTime(DateTime.now().year, DateTime.now().month,
             DateTime.now().day + 15));
     if (picked != null && picked != selectedDate)
@@ -269,18 +268,18 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
       showSnackbar('Enter task description', context);
       return;
     }
-    if(_dateStr == 'Due Date*'){
+    if (_dateStr == 'Due Date*') {
       showSnackbar('Enter Due Date', context);
       return;
     }
-    if(assignedTo == null){
+    if (assignedTo == null) {
       showSnackbar('Enter The Assignee', context);
       return;
     }
     _buttonKey.currentState.showLoader();
-    try{
+    try {
       taskCollection.add({
-        'title':_title.text.trim(),
+        'title': _title.text.trim(),
         'description': _desc.text.trim(),
         'createdAt': DateTime.now().toIso8601String(),
         'expiresAt': _dueDate.toIso8601String(),
@@ -288,24 +287,28 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
         'assignedTo': assignedTo.id,
         'assignedBy': fb.auth().currentUser.uid,
         'projectId': widget.projectId
-      }).then((taskRef){
+      }).then((taskRef) {
         usersCollection.doc(assignedTo.id).get().then((assignedUserDoc) {
           String assignedToName = assignedUserDoc.data()['name'];
-          usersCollection.doc(fb.auth().currentUser.uid).get().then((currentUserDoc){
+          usersCollection
+              .doc(fb.auth().currentUser.uid)
+              .get()
+              .then((currentUserDoc) {
             String currentUserName = currentUserDoc.data()['name'];
             transactionCollection.add({
               'createdAt': DateTime.now().toIso8601String(),
               'createdBy': fb.auth().currentUser.uid,
-              'message': '$currentUserName assigned $assignedToName a task: ${_title.text.trim()}',
+              'message':
+                  '$currentUserName assigned $assignedToName a task: ${_title.text.trim()}',
               'projectId': widget.projectId,
               'taskId': taskRef.id,
-            }).then((value){
+            }).then((value) {
               notificationCollection.add({
                 'createdAt': DateTime.now().toIso8601String(),
                 'projectId': value.id,
                 'read': false,
-                'text': '$currentUserName assigned you a task: ${_title.text
-                    .trim()}',
+                'text':
+                    '$currentUserName assigned you a task: ${_title.text.trim()}',
                 'userId': assignedTo.id
               });
             });
@@ -315,7 +318,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
         _buttonKey.currentState.hideLoader();
         Navigator.pop(context);
       });
-    }catch(_){
+    } catch (_) {
       if (_ is PlatformException)
         showSnackbar(_?.message, context);
       else

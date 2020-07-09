@@ -18,10 +18,11 @@ class ManageMembersPagePage extends StatefulWidget {
 
 class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
   TextEditingController _searchController;
-
+  ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     _searchController = TextEditingController()
       ..addListener(() {
         setState(() {});
@@ -31,6 +32,7 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -78,20 +80,23 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                                 snapshot.data.data()['members'].map((e) => e));
 
                             return ListView.builder(
+                              controller: _scrollController,
                               itemCount: members.length,
                               itemBuilder: (c, i) {
                                 return StreamBuilder<DocumentSnapshot>(
                                   stream: usersCollection
                                       .doc(members[i])
-                                      .onMetadataChangesSnapshot,
+                                      .onSnapshot,
                                   builder: (BuildContext context, userSnap) {
                                     if (userSnap.hasData) {
                                       if (members[i] ==
                                           fb.auth().currentUser.uid) {
-                                       return SmallUserWidget(
-                                          avatar: userSnap.data.data()['photo'],
-                                          name: userSnap.data.data()['name'],
-                                          email: userSnap.data.data()['email']);
+                                        return SmallUserWidget(
+                                            avatar:
+                                                userSnap.data.data()['photo'],
+                                            name: userSnap.data.data()['name'],
+                                            email:
+                                                userSnap.data.data()['email']);
                                       }
                                       return SmallUserWidget(
                                           avatar: userSnap.data.data()['photo'],
@@ -100,7 +105,7 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                                           onDelete: () async {
                                             members.removeWhere((element) =>
                                                 element == userSnap.data.id);
-                                          
+
                                             notificationCollection.add({
                                               'createdAt': DateTime.now()
                                                   .toIso8601String(),
@@ -155,8 +160,8 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                               prefixIcon: Icon(Icons.search)),
                         )),
                     Expanded(
-                        child: StreamBuilder<QuerySnapshot>(
-                      stream: usersCollection.onSnapshot,
+                        child: FutureBuilder<QuerySnapshot>(
+                      future: usersCollection.get(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError)
                           return HuddleErrorWidget(
@@ -213,7 +218,7 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                                           'createdAt':
                                               DateTime.now().toIso8601String(),
                                           'read': false,
-                                          'projectId':project.id,
+                                          'projectId': project.id,
                                           'text':
                                               'You have been added to project ${project.data()['name']}.',
                                           'userId': data[index].id
@@ -228,6 +233,11 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                                           'projectId': widget.projectId
                                         });
                                       });
+                                      _scrollController.animateTo(
+                                          _scrollController
+                                              .position.maxScrollExtent,
+                                          duration: kThemeAnimationDuration,
+                                          curve: Curves.linear);
                                     }
                                   });
                                 },

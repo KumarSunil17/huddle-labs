@@ -8,7 +8,6 @@ import 'package:huddlelabs/utils/components/huddle_loader.dart';
 import 'package:huddlelabs/utils/components/huddle_route_animation.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:firebase/firebase.dart' as fb;
-import 'package:huddlelabs/utils/enums.dart';
 import 'dart:html' as html;
 
 class ProfileWidget extends StatefulWidget {
