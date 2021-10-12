@@ -35,9 +35,9 @@ class NotificationDrawer extends StatelessWidget {
               if (s.hasError)
                 return HuddleErrorWidget(message: '${s.error.toString()}');
               if (s.hasData) {
-                final List<DocumentSnapshot> data = s.data.docs
+                final List<DocumentSnapshot> data = s.data!.docs
                     .where((element) =>
-                        element.data()['userId'] == fb.auth().currentUser.uid)
+                        element.data()['userId'] == fb.auth().currentUser!.uid)
                     .toList();
                 return ListView.builder(
                   itemCount: data.length,
@@ -109,7 +109,7 @@ class NotificationCard extends StatelessWidget {
                           .doc(notification.data()['projectId'])
                           .onSnapshot,
                       builder: (c, s) => Text(
-                        s.hasData ? s.data.data()['name'] : '',
+                        s.hasData ? s.data!.data()['name'] : '',
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                     ),

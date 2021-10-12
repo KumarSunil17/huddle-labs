@@ -8,20 +8,20 @@ class User {
   String about;
 
   User(
-      {this.name,
-      this.about,
-      this.dpUrl,
-      this.email,
-      this.gender,
-      this.location,
-      this.phone});
+      {required this.name,
+      required this.about,
+      required this.dpUrl,
+      required this.email,
+      required this.gender,
+      required this.location,
+      required this.phone});
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         name: json['name'],
         phone: json['phone'],
         gender: json['gender'],
         email: json['email'],
-        dpUrl: json['dp']??'',
+        dpUrl: json['dp'] ?? '',
         location: json['location'] ?? '',
         about: json['about'] ?? '',
       );

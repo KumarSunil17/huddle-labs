@@ -33,7 +33,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           child: Material(
             color: Colors.transparent,
             child: StreamBuilder<DocumentSnapshot>(
-              stream: usersCollection.doc(fb.auth().currentUser.uid).onSnapshot,
+              stream:
+                  usersCollection.doc(fb.auth().currentUser!.uid).onSnapshot,
               builder: (context, s) {
                 if (s.hasError)
                   return HuddleErrorWidget(message: '${s.error.toString()}');
@@ -62,7 +63,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                           width: isLoading ? 0 : 3)),
                                   child: FadeInImage.assetNetwork(
                                     placeholder: 'assets/placeholder.png',
-                                    image: s.data.data()['photo'] ?? '',
+                                    image: s.data!.data()['photo'] ?? '',
                                     fit: BoxFit.cover,
                                     height: 150,
                                     width: 150,
@@ -101,18 +102,18 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                       SizedBox(
                         height: 28,
                       ),
-                      Text('${s.data.data()['name']}',
+                      Text('${s.data!.data()['name']}',
                           style: TextStyle(
                               fontWeight: FontWeight.w700, fontSize: 22)),
                       SizedBox(
                         height: 8,
                       ),
-                      Text('${s.data.data()['email']}',
+                      Text('${s.data!.data()['email']}',
                           style: TextStyle(fontSize: 16)),
                       SizedBox(
                         height: 2,
                       ),
-                      Text('${s.data.data()['phone']}',
+                      Text('${s.data!.data()['phone']}',
                           style: TextStyle(fontSize: 16)),
                       SizedBox(height: 32),
                       HuddleOutlineButton('Logout', () {
@@ -180,7 +181,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   }
 
   uploadImage() async {
-    html.InputElement uploadInput = html.FileUploadInputElement();
+    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
     uploadInput.multiple = false;
     uploadInput.draggable = false;
     uploadInput.accept = 'image/png,image/jpeg,image/jpg';
@@ -188,7 +189,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
 
     uploadInput.onChange.listen(
       (changeEvent) {
-        final file = uploadInput.files.first;
+        final file = uploadInput.files!.first;
         final reader = html.FileReader();
         reader.readAsDataUrl(file);
         reader.onLoadEnd.listen(
@@ -206,12 +207,12 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     });
     final fb.UploadTask task = fb
         .storage()
-        .ref('users_dp/${fb.auth().currentUser.uid}.jpg')
+        .ref('users_dp/${fb.auth().currentUser!.uid}.jpg')
         .put(imageFile);
     final snapshot = await task.future;
     snapshot.ref.getDownloadURL().then((uri) {
       usersCollection
-          .doc(fb.auth().currentUser.uid)
+          .doc(fb.auth().currentUser!.uid)
           .update(data: {'photo': uri.toString()}).then((value) {
         setState(() {
           isLoading = false;

@@ -12,7 +12,7 @@ class HuddleAlert extends StatefulWidget {
   final PositiveCallback positiveAction;
   HuddleAlert(
       {this.positiveText = 'Ok',
-      @required this.positiveAction,
+      required this.positiveAction,
       this.negativeText = 'Cancel',
       this.alertTitle = 'Are you sure want to perform this action?',
       this.completedTitle = 'Successful',
@@ -24,7 +24,7 @@ class HuddleAlert extends StatefulWidget {
 
 class _HuddleDialogState extends State<HuddleAlert> {
   _DialogMode mode = _DialogMode.alert;
-  String completedText;
+  String? completedText;
   @override
   void initState() {
     super.initState();
@@ -89,9 +89,7 @@ class _HuddleDialogState extends State<HuddleAlert> {
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(width: 20),
-                  Text(
-                    "${widget.loadingTitle}"
-                  )
+                  Text("${widget.loadingTitle}")
                 ],
               ));
         } else {

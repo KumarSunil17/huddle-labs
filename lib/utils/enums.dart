@@ -28,7 +28,7 @@ extension GenderExtension on Gender {
   }
 }
 
-Gender genderFromInt(int gender) {
+Gender? genderFromInt(int gender) {
   switch (gender) {
     case 1:
       return Gender.male;
@@ -90,7 +90,17 @@ TaskStatus taskStatusFromInt(int status) {
   }
 }
 
-enum FileType { jpgImage, pngImage, video, doc, pdf, audio, ppt, sheet, noMedia }
+enum FileType {
+  jpgImage,
+  pngImage,
+  video,
+  doc,
+  pdf,
+  audio,
+  ppt,
+  sheet,
+  noMedia
+}
 
 extension FileTypeString on FileType {
   int get toInt {
@@ -159,7 +169,7 @@ extension FileTypeString on FileType {
   }
 }
 
-FileType fromStringToFileType(String str) {
+FileType? fromStringToFileType(String str) {
   if (str == FileType.doc.fileTypeString) {
     return FileType.doc;
   } else if (str == FileType.jpgImage.fileTypeString) {
@@ -179,25 +189,26 @@ FileType fromStringToFileType(String str) {
   } else
     return null;
 }
+
 FileType fromintToFileType(int i) {
   switch (i) {
-      case 1:
-        return FileType.doc;
-      case 2:
-        return FileType.jpgImage;
-      case 3:
-        return FileType.video;
-      case 4:
-        return FileType.pdf;
-      case 2:
-        return FileType.pngImage;
-      case 5:
-        return FileType.audio;
-      case 6:
-        return FileType.ppt;
-      case 7:
-        return FileType.sheet;
-      default:
-        return FileType.noMedia;
-    }
+    case 1:
+      return FileType.doc;
+    case 2:
+      return FileType.jpgImage;
+    case 3:
+      return FileType.video;
+    case 4:
+      return FileType.pdf;
+    case 2:
+      return FileType.pngImage;
+    case 5:
+      return FileType.audio;
+    case 6:
+      return FileType.ppt;
+    case 7:
+      return FileType.sheet;
+    default:
+      return FileType.noMedia;
+  }
 }

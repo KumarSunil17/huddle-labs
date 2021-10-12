@@ -48,7 +48,7 @@ class ProjectDetailsPage extends StatelessWidget {
                 Spacer(),
                 Text(
                   'Huddle labs',
-                  style: Theme.of(context).textTheme.headline5.copyWith(
+                  style: Theme.of(context).textTheme.headline5!.copyWith(
                       fontFamily: 'PoorRich',
                       color: Color.fromARGB(255, 21, 21, 21),
                       letterSpacing: 1.3),
@@ -58,7 +58,7 @@ class ProjectDetailsPage extends StatelessWidget {
                   shape: CircleBorder(),
                   constraints: BoxConstraints.tightFor(height: 36, width: 36),
                   onPressed: () {
-                    _scaffoldKey.currentState.openEndDrawer();
+                    _scaffoldKey.currentState?.openEndDrawer();
                   },
                   child: Icon(Icons.notifications, color: Color(0xFF212121)),
                 ),
@@ -109,7 +109,7 @@ class ProjectDetailsPage extends StatelessWidget {
                                     .onSnapshot,
                                 builder: (c, taskSnapshot) {
                                   final List<String> members = List.from(
-                                          projectSnapshot.data
+                                          projectSnapshot.data!
                                               .data()['members'])
                                       .map((e) => e.toString())
                                       .toList();
@@ -127,20 +127,20 @@ class ProjectDetailsPage extends StatelessWidget {
                                               MainAxisAlignment.start,
                                           children: [
                                             Text(
-                                              '${projectSnapshot.data.data()['name']}',
+                                              '${projectSnapshot.data!.data()['name']}',
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .headline6
+                                                  .headline6!
                                                   .copyWith(
                                                       color: Color(0xff555555),
                                                       fontWeight:
                                                           FontWeight.w600),
                                             ),
                                             Text(
-                                                '${projectSnapshot.data.data()['description']}',
+                                                '${projectSnapshot.data!.data()['description']}',
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .subtitle1
+                                                    .subtitle1!
                                                     .copyWith(
                                                       color: Color(0xff555555),
                                                     )),
@@ -157,18 +157,20 @@ class ProjectDetailsPage extends StatelessWidget {
                                         flex: 2,
                                         child: ProjectTaskGraph(
                                             {
-                                              'Created': taskSnapshot.hasData
-                                                  ? taskSnapshot.data.docs
-                                                      .where((element) =>
-                                                          element.data()[
-                                                              'status'] ==
-                                                          TaskStatus
-                                                              .created.toInt)
-                                                      .toList()
-                                                      .length
-                                                  : 1,
+                                              'Created':
+                                                  taskSnapshot.hasData == true
+                                                      ? taskSnapshot.data!.docs
+                                                          .where((element) =>
+                                                              element.data()[
+                                                                  'status'] ==
+                                                              TaskStatus.created
+                                                                  .toInt)
+                                                          .toList()
+                                                          .length
+                                                          .toDouble()
+                                                      : 1.0,
                                               'Submitted': taskSnapshot.hasData
-                                                  ? taskSnapshot.data.docs
+                                                  ? taskSnapshot.data!.docs
                                                       .where((element) =>
                                                           element.data()[
                                                               'status'] ==
@@ -176,9 +178,10 @@ class ProjectDetailsPage extends StatelessWidget {
                                                               .submitted.toInt)
                                                       .toList()
                                                       .length
-                                                  : 0,
+                                                      .toDouble()
+                                                  : 0.0,
                                               'Completed': taskSnapshot.hasData
-                                                  ? taskSnapshot.data.docs
+                                                  ? taskSnapshot.data!.docs
                                                       .where((element) =>
                                                           element.data()[
                                                               'status'] ==
@@ -186,9 +189,10 @@ class ProjectDetailsPage extends StatelessWidget {
                                                               .completed.toInt)
                                                       .toList()
                                                       .length
-                                                  : 0,
+                                                      .toDouble()
+                                                  : 0.0,
                                               'Running': taskSnapshot.hasData
-                                                  ? taskSnapshot.data.docs
+                                                  ? taskSnapshot.data!.docs
                                                       .where((element) =>
                                                           element.data()[
                                                               'status'] ==
@@ -196,10 +200,11 @@ class ProjectDetailsPage extends StatelessWidget {
                                                               .running.toInt)
                                                       .toList()
                                                       .length
-                                                  : 0,
+                                                      .toDouble()
+                                                  : 0.0,
                                             },
                                             taskSnapshot.hasData
-                                                ? taskSnapshot.data.docs.length
+                                                ? taskSnapshot.data!.docs.length
                                                 : 0),
                                       ),
                                       SizedBox(width: 16),
@@ -228,11 +233,11 @@ class ProjectDetailsPage extends StatelessWidget {
                                                         children: [
                                                           Spacer(),
                                                           Text(
-                                                              '${taskSnapshot.hasData ? taskSnapshot.data.docs.where((element) => element.data()['status'] == TaskStatus.completed.toInt).toList().length : ''}',
+                                                              '${taskSnapshot.hasData ? taskSnapshot.data!.docs.where((element) => element.data()['status'] == TaskStatus.completed.toInt).toList().length : ''}',
                                                               style: Theme.of(
                                                                       context)
                                                                   .textTheme
-                                                                  .headline4
+                                                                  .headline4!
                                                                   .copyWith(
                                                                       color: Colors
                                                                           .black)),
@@ -290,11 +295,11 @@ class ProjectDetailsPage extends StatelessWidget {
                                                         children: [
                                                           Spacer(),
                                                           Text(
-                                                              '${(projectSnapshot.data.data()['members'] as List).length}',
+                                                              '${(projectSnapshot.data!.data()['members'] as List).length}',
                                                               style: Theme.of(
                                                                       context)
                                                                   .textTheme
-                                                                  .headline4
+                                                                  .headline4!
                                                                   .copyWith(
                                                                       color: Colors
                                                                           .black)),
@@ -349,7 +354,8 @@ class ProjectDetailsPage extends StatelessWidget {
                                                           Map<String, int>
                                                               usersTasks = {};
 
-                                                          userSnapshot.data.docs
+                                                          userSnapshot
+                                                              .data!.docs
                                                               .forEach((user) {
                                                             members.forEach(
                                                                 (member) {
@@ -357,7 +363,7 @@ class ProjectDetailsPage extends StatelessWidget {
                                                                 usersTasks[
                                                                     user.data()[
                                                                         'name']] = taskSnapshot
-                                                                    .data.docs
+                                                                    .data!.docs
                                                                     .where((element) =>
                                                                         element.data()['assignedBy'] ==
                                                                             member ||
@@ -459,7 +465,7 @@ class ProjectDetailsPage extends StatelessWidget {
                                   builder: (c, s) {
                                     if (s.hasData) {
                                       final List<DocumentSnapshot> data = s
-                                          .data.docs
+                                          .data!.docs
                                           .where((element) =>
                                               element.data()['projectId'] ==
                                               projectId)

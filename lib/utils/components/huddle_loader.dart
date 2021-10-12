@@ -4,8 +4,8 @@ import 'package:flutter/widgets.dart';
 
 class HuddleLoader extends StatefulWidget {
   const HuddleLoader({
-    Key key,
-    @required this.color,
+    Key? key,
+    required this.color,
     this.size = 50.0,
   })  : assert(color != null),
         assert(size != null),
@@ -18,19 +18,22 @@ class HuddleLoader extends StatefulWidget {
   _HuddleLoaderState createState() => _HuddleLoaderState();
 }
 
-class _HuddleLoaderState extends State<HuddleLoader> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _animation;
+class _HuddleLoaderState extends State<HuddleLoader>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = (AnimationController(vsync: this, duration: const Duration(milliseconds: 1200)))
+    _controller = (AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200)))
       ..addListener(() => setState(() {}))
       ..repeat();
-    _animation = Tween(begin: 0.0, end: 8.0)
-        .animate(CurvedAnimation(parent: _controller, curve: const Interval(0.0, 1.0, curve: Curves.easeOut)));
+    _animation = Tween(begin: 0.0, end: 8.0).animate(CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 1.0, curve: Curves.easeOut)));
   }
 
   @override
@@ -55,7 +58,7 @@ class _HuddleLoaderState extends State<HuddleLoader> with SingleTickerProviderSt
 }
 
 class _HourGlassPainter extends CustomPainter {
-  _HourGlassPainter({this.weight = 90.0, Color color})
+  _HourGlassPainter({this.weight = 90.0, required Color color})
       : _paint = Paint()
           ..color = color
           ..strokeWidth = 1.0;

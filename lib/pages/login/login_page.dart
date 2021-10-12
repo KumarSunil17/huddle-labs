@@ -29,8 +29,11 @@ class LoginPage extends StatelessWidget {
                         alignment: Alignment.topLeft,
                         child: Text(
                           'Huddle labs',
-                          style: Theme.of(context).textTheme.headline5.copyWith(
-                              fontFamily: 'PoorRich', letterSpacing: 1.3),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5!
+                              .copyWith(
+                                  fontFamily: 'PoorRich', letterSpacing: 1.3),
                         )),
                   ),
                   Expanded(
@@ -79,7 +82,7 @@ class LoginPage extends StatelessWidget {
           top: 20,
           child: Text(
             'Huddle labs',
-            style: Theme.of(context).textTheme.headline5.copyWith(
+            style: Theme.of(context).textTheme.headline5!.copyWith(
                 fontFamily: 'PoorRich',
                 color: Colors.white,
                 letterSpacing: 1.3),
@@ -114,7 +117,7 @@ class _LoginFormState extends State<LoginForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<HuddleButtonState> _buttonKey =
       GlobalKey<HuddleButtonState>();
-  String _email, _password;
+  String? _email, _password;
   bool _autovalidate = false;
   bool _visible = true;
   @override
@@ -129,7 +132,7 @@ class _LoginFormState extends State<LoginForm> {
               child: Text('Log in',
                   style: Theme.of(context)
                       .textTheme
-                      .headline3
+                      .headline3!
                       .copyWith(color: Colors.black87)),
             ),
             SizedBox(height: 30),
@@ -142,11 +145,11 @@ class _LoginFormState extends State<LoginForm> {
                 hintText: 'your@example.com',
                 labelText: 'Email',
               ),
-              onSaved: (String value) {
+              onSaved: (String? value) {
                 _email = value;
               },
-              validator: (String value) {
-                if (value.isEmpty) return 'Email is required.';
+              validator: (String? value) {
+                if (value!.isEmpty) return 'Email is required.';
                 if (!emailExpression.hasMatch(value))
                   return 'Please enter valid email address.';
                 return null;
@@ -173,11 +176,11 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 labelText: 'Password',
               ),
-              onSaved: (String value) {
+              onSaved: (String? value) {
                 _password = value;
               },
-              validator: (String value) {
-                if (value.isEmpty) return 'Password is required.';
+              validator: (String? value) {
+                if (value!.isEmpty) return 'Password is required.';
                 return null;
               },
             ),
@@ -201,7 +204,7 @@ class _LoginFormState extends State<LoginForm> {
                       pageBuilder: (context, animation1, animation2) {
                         return ForgotPasswordDialog();
                       }).then((value) {
-                    if (value != null) {
+                    if (value != null && value is String) {
                       showSnackbar(value, context);
                     }
                   });
@@ -218,8 +221,8 @@ class _LoginFormState extends State<LoginForm> {
               width: MediaQuery.of(context).size.width,
               text: 'Log In',
               onPressed: () {
-                final FormState form = _formKey.currentState;
-                if (!form.validate()) {
+                final FormState? form = _formKey.currentState;
+                if (!form!.validate()) {
                   _autovalidate = true;
                 } else {
                   form.save();
@@ -248,9 +251,9 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   _doLogin() {
-    _buttonKey.currentState.showLoader();
+    _buttonKey.currentState?.showLoader();
     auth()
-        .signInWithEmailAndPassword(_email, _password)
+        .signInWithEmailAndPassword(_email!, _password!)
         .then((UserCredential result) {
       showSnackbar('Sign in successful.', context);
 
@@ -263,7 +266,7 @@ class _LoginFormState extends State<LoginForm> {
         print(error);
       }
     }).whenComplete(() {
-      _buttonKey.currentState.hideLoader();
+      _buttonKey.currentState?.hideLoader();
     });
   }
 }
@@ -285,7 +288,7 @@ class LoginWebBanner extends StatelessWidget {
             'A solution to the development exceptions.',
             style: Theme.of(context)
                 .textTheme
-                .subtitle1
+                .subtitle1!
                 .copyWith(color: Colors.white),
           ),
           Image.asset(

@@ -13,19 +13,19 @@ class AddTaskDialog extends StatefulWidget {
   final int status;
   final String projectId;
 
-  AddTaskDialog({@required this.status, @required this.projectId});
+  AddTaskDialog({required this.status, required this.projectId});
   @override
   _AddTaskDialogState createState() => _AddTaskDialogState();
 }
 
 class _AddTaskDialogState extends State<AddTaskDialog> {
-  TextEditingController _searchController;
-  DocumentSnapshot assignedTo;
+  late TextEditingController _searchController;
+  DocumentSnapshot? assignedTo;
   final GlobalKey<HuddleButtonState> _buttonKey =
       GlobalKey<HuddleButtonState>();
-  TextEditingController _title, _desc;
+  late TextEditingController _title, _desc;
   String _dateStr = 'Due Date*';
-  DateTime _dueDate;
+  late DateTime _dueDate;
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
               message: 'Type keyword to search user...',
             );
 
-          List<dynamic> membersList = snapshot.data.data()['members'] as List;
+          List<dynamic> membersList = snapshot.data!.data()['members'] as List;
 
           if (membersList.isEmpty) {
             return HuddleErrorWidget(message: 'No users found.');
@@ -73,18 +73,18 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                       if (userSnapshot.hasData) {
                         String str =
                             _searchController.text.trim().toLowerCase();
-                        if (userSnapshot.data
+                        if (userSnapshot.data!
                             .data()['name']
                             .toString()
                             .toLowerCase()
                             .contains(str)) {
                           return UserListTile(
-                            avatar: userSnapshot.data.data()['photo'],
-                            name: userSnapshot.data.data()['name'],
-                            email: userSnapshot.data.data()['email'],
+                            avatar: userSnapshot.data!.data()['photo'],
+                            name: userSnapshot.data!.data()['name'],
+                            email: userSnapshot.data!.data()['email'],
                             onPressed: () {
                               setState(() {
-                                assignedTo = userSnapshot.data;
+                                assignedTo = userSnapshot.data!;
                               });
                             },
                           );
@@ -131,7 +131,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                               ),
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline4
+                                  .headline4!
                                   .copyWith(color: Colors.black)),
                         ),
                         SizedBox(
@@ -153,7 +153,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                                 ),
                                 style: Theme.of(context)
                                     .textTheme
-                                    .headline5
+                                    .headline5!
                                     .copyWith(color: Colors.black))),
                         SizedBox(height: 12),
                         GestureDetector(
@@ -181,15 +181,15 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                           'Assigned to',
                           style: Theme.of(context)
                               .textTheme
-                              .headline6
+                              .headline6!
                               .copyWith(color: Colors.black),
                         ),
                         SizedBox(height: 8),
                         assignedTo != null
                             ? SmallUserWidget(
-                                avatar: assignedTo.data()['photo'],
-                                name: assignedTo.data()['name'],
-                                email: assignedTo.data()['email'],
+                                avatar: assignedTo!.data()['photo'],
+                                name: assignedTo!.data()['name'],
+                                email: assignedTo!.data()['email'],
                                 onDelete: () =>
                                     setState(() => assignedTo = null))
                             : Container(),
@@ -243,7 +243,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   Future<Null> _selectDate(BuildContext context) async {
     FocusScope.of(context).unfocus();
     DateTime selectedDate = DateTime.now();
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
@@ -276,7 +276,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
       showSnackbar('Enter The Assignee', context);
       return;
     }
-    _buttonKey.currentState.showLoader();
+    _buttonKey.currentState?.showLoader();
     try {
       taskCollection.add({
         'title': _title.text.trim(),
@@ -284,20 +284,20 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
         'createdAt': DateTime.now().toIso8601String(),
         'expiresAt': _dueDate.toIso8601String(),
         'status': widget.status,
-        'assignedTo': assignedTo.id,
-        'assignedBy': fb.auth().currentUser.uid,
+        'assignedTo': assignedTo?.id,
+        'assignedBy': fb.auth().currentUser?.uid,
         'projectId': widget.projectId
       }).then((taskRef) {
-        usersCollection.doc(assignedTo.id).get().then((assignedUserDoc) {
+        usersCollection.doc(assignedTo?.id).get().then((assignedUserDoc) {
           String assignedToName = assignedUserDoc.data()['name'];
           usersCollection
-              .doc(fb.auth().currentUser.uid)
+              .doc(fb.auth().currentUser?.uid)
               .get()
               .then((currentUserDoc) {
             String currentUserName = currentUserDoc.data()['name'];
             transactionCollection.add({
               'createdAt': DateTime.now().toIso8601String(),
-              'createdBy': fb.auth().currentUser.uid,
+              'createdBy': fb.auth().currentUser?.uid,
               'message':
                   '$currentUserName assigned $assignedToName a task: ${_title.text.trim()}',
               'projectId': widget.projectId,
@@ -309,20 +309,20 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 'read': false,
                 'text':
                     '$currentUserName assigned you a task: ${_title.text.trim()}',
-                'userId': assignedTo.id
+                'userId': assignedTo?.id
               });
             });
           });
         });
       }).whenComplete(() {
-        _buttonKey.currentState.hideLoader();
+        _buttonKey.currentState?.hideLoader();
         Navigator.pop(context);
       });
     } catch (_) {
       if (_ is PlatformException)
-        showSnackbar(_?.message, context);
+        showSnackbar(_.message ?? "", context);
       else
-        showSnackbar(_?.toString(), context);
+        showSnackbar(_.toString(), context);
     }
   }
 }

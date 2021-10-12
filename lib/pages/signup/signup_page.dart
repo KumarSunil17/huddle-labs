@@ -28,8 +28,11 @@ class SignupPage extends StatelessWidget {
                         alignment: Alignment.topLeft,
                         child: Text(
                           'Huddle labs',
-                          style: Theme.of(context).textTheme.headline5.copyWith(
-                              fontFamily: 'PoorRich', letterSpacing: 1.3),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5!
+                              .copyWith(
+                                  fontFamily: 'PoorRich', letterSpacing: 1.3),
                         )),
                   ),
                   Expanded(
@@ -81,7 +84,7 @@ class SignupPage extends StatelessWidget {
           top: 20,
           child: Text(
             'Huddle labs',
-            style: Theme.of(context).textTheme.headline5.copyWith(
+            style: Theme.of(context).textTheme.headline5!.copyWith(
                 fontFamily: 'PoorRich',
                 color: Colors.white,
                 letterSpacing: 1.3),
@@ -117,8 +120,8 @@ class _SignUpFormState extends State<SignUpForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<HuddleButtonState> _buttonKey =
       GlobalKey<HuddleButtonState>();
-  String _email, _password, _name, _phone;
-  Gender _gender;
+  String? _email, _password, _name, _phone;
+  Gender? _gender;
   bool _autovalidate = false;
   bool _visible = true;
   @override
@@ -133,7 +136,7 @@ class _SignUpFormState extends State<SignUpForm> {
               child: Text('Sign up',
                   style: Theme.of(context)
                       .textTheme
-                      .headline3
+                      .headline3!
                       .copyWith(color: Colors.black87)),
             ),
             SizedBox(height: 15),
@@ -148,11 +151,11 @@ class _SignUpFormState extends State<SignUpForm> {
                 hintText: 'James Bond',
                 labelText: 'Name',
               ),
-              onSaved: (String value) {
+              onSaved: (String? value) {
                 _name = value;
               },
-              validator: (String value) {
-                if (value.trim().isEmpty) return 'Name is required.';
+              validator: (String? value) {
+                if (value!.trim().isEmpty) return 'Name is required.';
                 if (!nameExpression.hasMatch(value))
                   return 'Please enter valid name.';
                 return null;
@@ -170,11 +173,11 @@ class _SignUpFormState extends State<SignUpForm> {
                 hintText: 'your@example.com',
                 labelText: 'Email',
               ),
-              onSaved: (String value) {
+              onSaved: (String? value) {
                 _email = value;
               },
-              validator: (String value) {
-                if (value.trim().isEmpty) return 'Email is required.';
+              validator: (String? value) {
+                if (value!.trim().isEmpty) return 'Email is required.';
                 if (!emailExpression.hasMatch(value))
                   return 'Please enter valid email address.';
                 return null;
@@ -190,11 +193,11 @@ class _SignUpFormState extends State<SignUpForm> {
                 hintText: '1234567890',
                 labelText: 'Phone',
               ),
-              onSaved: (String value) {
+              onSaved: (value) {
                 _phone = value;
               },
-              validator: (String value) {
-                if (value.trim().isEmpty) return 'Phone is required.';
+              validator: (String? value) {
+                if (value!.trim().isEmpty) return 'Phone is required.';
                 if (!phoneExpression.hasMatch(value))
                   return 'Please enter valid phone number.';
                 return null;
@@ -249,11 +252,11 @@ class _SignUpFormState extends State<SignUpForm> {
               onChanged: (value) {
                 _password = value;
               },
-              onSaved: (String value) {
+              onSaved: (String? value) {
                 _password = value;
               },
-              validator: (String value) {
-                if (value.trim().isEmpty) return 'Password is required.';
+              validator: (String? value) {
+                if (value!.trim().isEmpty) return 'Password is required.';
                 //  if (!passwordExpression.hasMatch(value))
                 //   return 'Please enter valid email address.';
                 return null;
@@ -280,8 +283,8 @@ class _SignUpFormState extends State<SignUpForm> {
                 ),
                 labelText: 'Confirm Password',
               ),
-              validator: (String value) {
-                if (_password.trim() == value.trim()) return null;
+              validator: (String? value) {
+                if (_password!.trim() == value!.trim()) return null;
                 return 'Password did not match.';
               },
             ),
@@ -291,8 +294,8 @@ class _SignUpFormState extends State<SignUpForm> {
               width: MediaQuery.of(context).size.width,
               text: 'Sign Up',
               onPressed: () {
-                final FormState form = _formKey.currentState;
-                if (!form.validate()) {
+                final FormState? form = _formKey.currentState;
+                if (!form!.validate()) {
                   _autovalidate = true;
                 } else {
                   form.save();
@@ -301,11 +304,12 @@ class _SignUpFormState extends State<SignUpForm> {
               },
             ),
             SizedBox(height: 20),
-            Row(mainAxisAlignment: MainAxisAlignment.center,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('Already have an account? '),
                 InkWell(
-                  splashColor: Colors.transparent,
+                    splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onTap: () {
                       Navigator.pop(context);
@@ -320,38 +324,38 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   _doSignUp() {
-    _buttonKey.currentState.showLoader();
+    _buttonKey.currentState?.showLoader();
     Map<String, dynamic> data = {
-      'name': _name.trim(),
-      'email': _email.trim(),
-      'phone': _phone.trim(),
-      'gender': _gender.toInt,
+      'name': _name?.trim(),
+      'email': _email?.trim(),
+      'phone': _phone?.trim(),
+      'gender': _gender?.toInt,
       'createdAt': DateTime.now()
     };
     fb
         .auth()
-        .createUserWithEmailAndPassword(_email.trim(), _password.trim())
+        .createUserWithEmailAndPassword(_email!.trim(), _password!.trim())
         .then((fb.UserCredential result) {
-      usersCollection.doc(result.user.uid).set(data).then((value) {
+      usersCollection.doc(result.user!.uid).set(data).then((value) {
         showSnackbar('Sign up successful.', context);
         Navigator.pushAndRemoveUntil(
             context, FadeRoute(page: DashboardPage()), (route) => false);
-        _buttonKey.currentState.hideLoader();
+        _buttonKey.currentState?.hideLoader();
       }).catchError((error) {
         if (error is fb.FirebaseError) {
           fb.auth().signOut();
           showSnackbar('${error.message}', context);
-          _buttonKey.currentState.hideLoader();
+          _buttonKey.currentState?.hideLoader();
         } else {
           print(error);
         }
       }).whenComplete(() {
-        _buttonKey.currentState.hideLoader();
+        _buttonKey.currentState?.hideLoader();
       });
     }).catchError((error) {
       if (error is fb.FirebaseError) {
         showSnackbar('${error.message}', context);
-        _buttonKey.currentState.hideLoader();
+        _buttonKey.currentState?.hideLoader();
       } else {
         print(error);
       }
@@ -376,7 +380,7 @@ class LoginWebBanner extends StatelessWidget {
             'A solution to the development exceptions.',
             style: Theme.of(context)
                 .textTheme
-                .subtitle1
+                .subtitle1!
                 .copyWith(color: Colors.white),
           ),
           Image.asset(
@@ -395,7 +399,7 @@ class LowerCaseTextFormatter extends TextInputFormatter {
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
     return TextEditingValue(
-      text: newValue.text?.toLowerCase(),
+      text: newValue.text.toLowerCase() ?? "",
       selection: newValue.selection,
     );
   }

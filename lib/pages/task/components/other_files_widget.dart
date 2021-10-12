@@ -9,7 +9,7 @@ class ChoosedFileWidget extends StatelessWidget {
   final FileType type;
   final Uint8List image;
   final String name;
-  const ChoosedFileWidget(this.type, {this.image, this.name});
+  const ChoosedFileWidget(this.type, {required this.image, required this.name});
 
   @override
   Widget build(BuildContext context) {

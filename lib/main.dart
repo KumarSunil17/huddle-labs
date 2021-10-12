@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         home: //ProjectDetailsPage('4A9IN5PBVr1ZiAtyd5bs'));
             Builder(
           builder: (context) {
-            fb.User user = fb.auth().currentUser;
+            fb.User? user = fb.auth().currentUser;
             if (user != null && user.uid != null && user.uid.isNotEmpty) {
               return DashboardPage();
             }

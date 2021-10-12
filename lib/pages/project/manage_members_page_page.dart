@@ -17,8 +17,8 @@ class ManageMembersPagePage extends StatefulWidget {
 }
 
 class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
-  TextEditingController _searchController;
-  ScrollController _scrollController;
+  late TextEditingController _searchController;
+  late ScrollController _scrollController;
   @override
   void initState() {
     super.initState();
@@ -44,7 +44,7 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
           future: projectCollection.doc(widget.projectId).get(),
           builder: (BuildContext context, snapshot) {
             return Text(snapshot.hasData
-                ? '${snapshot.data.data()['name']} members'
+                ? '${snapshot.data!.data()['name']} members'
                 : '');
           },
         ),
@@ -66,7 +66,7 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                         'Members',
                         style: Theme.of(context)
                             .textTheme
-                            .headline6
+                            .headline6!
                             .copyWith(color: Colors.black),
                       ),
                     ),
@@ -77,7 +77,7 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                         builder: (BuildContext context, snapshot) {
                           if (snapshot.hasData) {
                             final List<String> members = List<String>.from(
-                                snapshot.data.data()['members'].map((e) => e));
+                                snapshot.data!.data()['members'].map((e) => e));
 
                             return ListView.builder(
                               controller: _scrollController,
@@ -90,21 +90,22 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                                   builder: (BuildContext context, userSnap) {
                                     if (userSnap.hasData) {
                                       if (members[i] ==
-                                          fb.auth().currentUser.uid) {
+                                          fb.auth().currentUser!.uid) {
                                         return SmallUserWidget(
                                             avatar:
-                                                userSnap.data.data()['photo'],
-                                            name: userSnap.data.data()['name'],
+                                                userSnap.data!.data()['photo'],
+                                            name: userSnap.data!.data()['name'],
                                             email:
-                                                userSnap.data.data()['email']);
+                                                userSnap.data!.data()['email']);
                                       }
                                       return SmallUserWidget(
-                                          avatar: userSnap.data.data()['photo'],
-                                          name: userSnap.data.data()['name'],
-                                          email: userSnap.data.data()['email'],
+                                          avatar:
+                                              userSnap.data!.data()['photo'],
+                                          name: userSnap.data!.data()['name'],
+                                          email: userSnap.data!.data()['email'],
                                           onDelete: () async {
                                             members.removeWhere((element) =>
-                                                element == userSnap.data.id);
+                                                element == userSnap.data!.id);
 
                                             notificationCollection.add({
                                               'createdAt': DateTime.now()
@@ -112,16 +113,16 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                                               'projectId': '',
                                               'read': false,
                                               'text':
-                                                  'You have been removed from ${snapshot.data.data()['name']}.',
-                                              'userId': userSnap.data.id
+                                                  'You have been removed from ${snapshot.data!.data()['name']}.',
+                                              'userId': userSnap.data!.id
                                             });
                                             await transactionCollection.add({
                                               'createdAt': DateTime.now()
                                                   .toIso8601String(),
                                               'createdBy':
-                                                  fb.auth().currentUser.uid,
+                                                  fb.auth().currentUser!.uid,
                                               'message':
-                                                  '${userSnap.data.data()['name']} was removed from ${snapshot.data.data()['name']}.',
+                                                  '${userSnap.data!.data()['name']} was removed from ${snapshot.data!.data()['name']}.',
                                               'projectId': widget.projectId
                                             });
                                             await projectCollection
@@ -171,7 +172,8 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                             return HuddleErrorWidget(
                               message: 'Type keyword to search user...',
                             );
-                          final List<DocumentSnapshot> data = snapshot.data.docs
+                          final List<DocumentSnapshot> data = snapshot
+                              .data!.docs
                               .where((element) =>
                                   element.data()['name'].toString().contains(
                                       _searchController.text
@@ -189,7 +191,8 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                           return ListView.builder(
                             itemCount: data.length,
                             itemBuilder: (c, index) {
-                              if (data[index].id == fb.auth().currentUser.uid) {
+                              if (data[index].id ==
+                                  fb.auth().currentUser!.uid) {
                                 return Container();
                               }
                               return UserListTile(
@@ -227,7 +230,7 @@ class _ManageProjectMembersPagePageState extends State<ManageMembersPagePage> {
                                           'createdAt':
                                               DateTime.now().toIso8601String(),
                                           'createdBy':
-                                              fb.auth().currentUser.uid,
+                                              fb.auth().currentUser!.uid,
                                           'message':
                                               '${data[index].data()['name']} has been added to project ${project.data()['name']}.',
                                           'projectId': widget.projectId

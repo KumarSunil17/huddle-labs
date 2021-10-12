@@ -13,7 +13,7 @@ class ProjectTaskGraph extends StatefulWidget {
 }
 
 class _ProjectTaskGraphState extends State<ProjectTaskGraph> {
-  int touchedIndex;
+  int? touchedIndex;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,16 +33,16 @@ class _ProjectTaskGraphState extends State<ProjectTaskGraph> {
             child: Stack(
               children: [
                 PieChart(PieChartData(
-                    pieTouchData:
-                        PieTouchData(touchCallback: (pieTouchResponse) {
-                      setState(() {
-                        if (pieTouchResponse.touchInput is FlLongPressEnd ||
-                            pieTouchResponse.touchInput is FlPanEnd) {
-                          touchedIndex = -1;
-                        } else {
-                          touchedIndex = pieTouchResponse.touchedSectionIndex;
-                        }
-                      });
+                    pieTouchData: PieTouchData(
+                        touchCallback: (e, PieTouchResponse? pieTouchResponse) {
+                      // setState(() {
+                      //   if (pieTouchResponse!.touchInput is FlLongPressEnd ||
+                      //       pieTouchResponse.touchInput is FlPanEnd) {
+                      //     touchedIndex = -1;
+                      //   } else {
+                      //     touchedIndex = pieTouchResponse.touchedSectionIndex;
+                      //   }
+                      // });
                     }),
                     borderData: FlBorderData(
                       show: false,
@@ -160,13 +160,13 @@ class ProjectUsersGraph extends StatefulWidget {
 }
 
 class _ProjectUsersGraphState extends State<ProjectUsersGraph> {
-  int touchedIndex;
+  int? touchedIndex;
 
   @override
   Widget build(BuildContext context) {
     final List<GraphData> list = [];
     widget.graphData.keys.forEach((element) {
-      list.add(GraphData(element, widget.graphData[element]));
+      list.add(GraphData(element, widget.graphData[element]!));
     });
     return Container(
         decoration: BoxDecoration(color: Colors.white, boxShadow: [
@@ -187,7 +187,6 @@ class _ProjectUsersGraphState extends State<ProjectUsersGraph> {
                 touchTooltipData: BarTouchTooltipData(
                   tooltipBgColor: Colors.transparent,
                   tooltipPadding: const EdgeInsets.all(0),
-                  tooltipBottomMargin: 0,
                   getTooltipItem: (
                     BarChartGroupData group,
                     int groupIndex,
@@ -208,7 +207,7 @@ class _ProjectUsersGraphState extends State<ProjectUsersGraph> {
                 show: true,
                 bottomTitles: SideTitles(
                   showTitles: true,
-                  textStyle: TextStyle(
+                  getTextStyles: (c, d) => TextStyle(
                       color: Colors.black,
                       // fontWeight: FontWeight.bold,
                       fontSize: 14),
@@ -221,7 +220,7 @@ class _ProjectUsersGraphState extends State<ProjectUsersGraph> {
                 ),
                 leftTitles: SideTitles(
                   showTitles: true,
-                  textStyle: const TextStyle(
+                  getTextStyles: (c, d) => const TextStyle(
                       color: Colors.black,
                       fontSize: 14,
                       fontWeight: FontWeight.bold),
@@ -245,7 +244,10 @@ class _ProjectUsersGraphState extends State<ProjectUsersGraph> {
                               y: e.value.toDouble(),
                               borderRadius: BorderRadius.circular(2),
                               width: 30,
-                              color: Colors.lightBlueAccent),
+                              colors: [
+                                Colors.lightBlueAccent,
+                                Colors.lightBlueAccent,
+                              ]),
                         ],
                         showingTooltipIndicators: const [0],
                       ))
