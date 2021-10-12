@@ -7,17 +7,18 @@ import 'package:huddlelabs/utils/components/huddle_loader.dart';
 import 'package:huddlelabs/utils/components/responsive_widget.dart';
 import 'package:huddlelabs/utils/constants.dart';
 import 'package:firebase/firebase.dart' as fb;
+
 class AddProjectDialog extends StatefulWidget {
   @override
   _AddProjectDialogState createState() => _AddProjectDialogState();
 }
 
 class _AddProjectDialogState extends State<AddProjectDialog> {
-  TextEditingController _searchController;
+  late TextEditingController _searchController;
   List<DocumentSnapshot> _selectedUsers = [];
   final GlobalKey<HuddleButtonState> _buttonKey =
       GlobalKey<HuddleButtonState>();
-  TextEditingController _title, _desc;
+  late TextEditingController _title, _desc;
 
   @override
   void initState() {
@@ -50,7 +51,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
             return HuddleErrorWidget(
               message: 'Type keyword to search user...',
             );
-          final List<DocumentSnapshot> data = snapshot.data.docs
+          final List<DocumentSnapshot> data = snapshot.data!.docs
               .where((element) =>
                   element
                       .data()['name']
@@ -58,7 +59,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                       .contains(_searchController.text.trim().toLowerCase()) ||
                   element.data()['email'].toString().contains(
                           _searchController.text.trim().toLowerCase()) &&
-                      element.id != fb.auth().currentUser.uid)
+                      element.id != fb.auth().currentUser!.uid)
               .toList();
           if (data.isEmpty) {
             return HuddleErrorWidget(message: 'No users found.');
@@ -107,7 +108,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                           ),
                           style: Theme.of(context)
                               .textTheme
-                              .headline4
+                              .headline4!
                               .copyWith(color: Colors.black)),
                     ),
                     SizedBox(
@@ -130,14 +131,14 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
                             ),
                             style: Theme.of(context)
                                 .textTheme
-                                .headline5
+                                .headline5!
                                 .copyWith(color: Colors.black))),
                     SizedBox(height: 12),
                     Text(
                       'Team members',
                       style: Theme.of(context)
                           .textTheme
-                          .headline6
+                          .headline6!
                           .copyWith(color: Colors.black),
                     ),
                     SizedBox(height: 8),
@@ -213,7 +214,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
             ),
             style: Theme.of(context)
                 .textTheme
-                .headline5
+                .headline5!
                 .copyWith(color: Colors.black)),
       ),
       Container(
@@ -232,15 +233,17 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
               ),
               style: Theme.of(context)
                   .textTheme
-                  .headline6
+                  .headline6!
                   .copyWith(color: Colors.black))),
       SizedBox(
         height: 8,
       ),
       Text(
         'Team members',
-        style:
-            Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),
+        style: Theme.of(context)
+            .textTheme
+            .headline6!
+            .copyWith(color: Colors.black),
       ),
       SizedBox(height: 8),
       Container(
@@ -316,26 +319,26 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
       showSnackbar('Enter project title', context);
       return;
     }
-    _buttonKey.currentState.showLoader();
+    _buttonKey.currentState!.showLoader();
     final List<String> members =
         List<String>.from(_selectedUsers.map((e) => e.id).toList());
-    members.add(fb.auth().currentUser.uid);
+    members.add(fb.auth().currentUser!.uid);
 
     try {
       projectCollection.add({
         'name': _title.text.trim(),
         'createdAt': DateTime.now().toIso8601String(),
-        'createdBy': fb.auth().currentUser.uid,
+        'createdBy': fb.auth().currentUser!.uid,
         'description': _desc.text.trim(),
         'members': members,
       }).then((value) {
         usersCollection
-            .doc(fb.auth().currentUser.uid)
+            .doc(fb.auth().currentUser!.uid)
             .get()
             .then((currentUserDoc) {
           transactionCollection.add({
             'createdAt': DateTime.now().toIso8601String(),
-            'createdBy': fb.auth().currentUser.uid,
+            'createdBy': fb.auth().currentUser!.uid,
             'message':
                 '${currentUserDoc.data()['name']} created project ${_title.text.trim()}.',
             'projectId': value.id
@@ -343,7 +346,7 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
           final List<String> names = [];
           members.forEach((member) {
             usersCollection.doc(member).get().then((userDoc) {
-              if (userDoc.id != fb.auth().currentUser.uid)
+              if (userDoc.id != fb.auth().currentUser!.uid)
                 names.add(userDoc.data()['name']);
               notificationCollection.add({
                 'createdAt': DateTime.now().toIso8601String(),
@@ -357,19 +360,19 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
           });
           transactionCollection.add({
             'createdAt': DateTime.now().toIso8601String(),
-            'createdBy': fb.auth().currentUser.uid,
+            'createdBy': fb.auth().currentUser!.uid,
             'message':
                 '${currentUserDoc.data()['name']} added ${names.join(', ')} to ${_title.text.trim()}.',
             'projectId': value.id
           });
         });
       }).whenComplete(() {
-        _buttonKey.currentState.hideLoader();
+        _buttonKey.currentState?.hideLoader();
         Navigator.pop(context);
       });
     } catch (e) {
       if (e is PlatformException)
-        showSnackbar(e.message, context);
+        showSnackbar(e.message ?? "", context);
       else
         showSnackbar(e.toString(), context);
     }
@@ -377,10 +380,14 @@ class _AddProjectDialogState extends State<AddProjectDialog> {
 }
 
 class SmallUserWidget extends StatelessWidget {
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
   final String avatar, email, name, phone;
   const SmallUserWidget(
-      {this.onDelete, this.name, this.avatar, this.email, this.phone = ''});
+      {this.onDelete,
+      required this.name,
+      required this.avatar,
+      required this.email,
+      this.phone = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -463,7 +470,11 @@ class UserListTile extends StatelessWidget {
   final VoidCallback onPressed;
   final String avatar, email, name, phone;
   UserListTile(
-      {this.onPressed, this.name, this.avatar, this.email, this.phone = ''});
+      {required this.onPressed,
+      required this.name,
+      required this.avatar,
+      required this.email,
+      this.phone = ''});
   @override
   Widget build(BuildContext context) {
     return InkWell(

@@ -20,14 +20,13 @@ class CompletedTaskPage extends StatelessWidget {
               .onSnapshot,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              final List<DocumentSnapshot> tasks = snapshot.data.docs;
+              final List<DocumentSnapshot> tasks = snapshot.data!.docs;
               if (tasks.isNotEmpty) {
                 return ListView.separated(
                     separatorBuilder: (c, i) => SizedBox(height: 8),
                     padding: const EdgeInsets.all(12),
                     itemCount: tasks.length,
-                    itemBuilder: (c, index) =>
-                        TaskCard(tasks[index]));
+                    itemBuilder: (c, index) => TaskCard(tasks[index]));
               } else {
                 return Container();
               }

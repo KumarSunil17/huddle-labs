@@ -22,7 +22,7 @@ class _DashboardPageState extends State<DashboardPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   final double targetElevation = 3;
   double _elevation = 0;
-  ScrollController _controller;
+  late ScrollController _controller;
   @override
   void initState() {
     super.initState();
@@ -54,9 +54,9 @@ class _DashboardPageState extends State<DashboardPage> {
             if (!snapshot.hasData) {
               return Center(child: AddProjectCard());
             } else {
-              final List<DocumentSnapshot> data = snapshot.data.docs
+              final List<DocumentSnapshot> data = snapshot.data!.docs
                   .where((element) =>
-                      element.data()['createdBy'] == fb.auth().currentUser.uid)
+                      element.data()['createdBy'] == fb.auth().currentUser!.uid)
                   .toList();
               return GridView.builder(
                   padding: const EdgeInsets.all(16),
@@ -87,12 +87,12 @@ class _DashboardPageState extends State<DashboardPage> {
         stream: projectCollection.onSnapshot,
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
-            final List<DocumentSnapshot> data = snapshot.data.docs
+            final List<DocumentSnapshot> data = snapshot.data!.docs
                 .where((element) =>
                     element
                         .data()['members']
-                        .contains(fb.auth().currentUser.uid) &&
-                    element.data()['createdBy'] != fb.auth().currentUser.uid)
+                        .contains(fb.auth().currentUser!.uid) &&
+                    element.data()['createdBy'] != fb.auth().currentUser!.uid)
                 .toList();
 
             return GridView.builder(
@@ -232,7 +232,7 @@ class _DashboardPageState extends State<DashboardPage> {
           IconButton(
             icon: Icon(Icons.notifications),
             onPressed: () {
-              _scaffoldKey.currentState.openEndDrawer();
+              _scaffoldKey.currentState?.openEndDrawer();
             },
           ),
           IconButton(

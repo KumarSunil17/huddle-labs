@@ -11,10 +11,16 @@ class ChatMessageWidget extends StatelessWidget {
   final FileType fileType;
   final bool isSender;
   const ChatMessageWidget.sender(
-      {this.dateTime, this.fileType, this.imageUrl, this.message})
+      {required this.dateTime,
+      required this.fileType,
+      required this.imageUrl,
+      required this.message})
       : isSender = true;
   const ChatMessageWidget.receiver(
-      {this.dateTime, this.fileType, this.imageUrl, this.message})
+      {required this.dateTime,
+      required this.fileType,
+      required this.imageUrl,
+      required this.message})
       : isSender = false;
 
   @override

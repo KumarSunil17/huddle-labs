@@ -34,9 +34,9 @@ class TaskConversationWidget extends StatefulWidget {
 }
 
 class _TaskConversationWidgetState extends State<TaskConversationWidget> {
-  Uint8List _bytesData;
+  Uint8List? _bytesData;
   bool isFileSelected = false;
-  FileType fileType;
+  FileType? fileType;
   ScrollController scrollController = ScrollController();
   TextEditingController _textEditingController = TextEditingController();
   @override
@@ -102,13 +102,13 @@ class _TaskConversationWidgetState extends State<TaskConversationWidget> {
                           color: Colors.grey.withOpacity(0.3),
                           child: FadeInImage.assetNetwork(
                             placeholder: 'assets/placeholder.png',
-                            image: userSnapshot.data.data()['photo'] ?? '',
+                            image: userSnapshot.data!.data()['photo'] ?? '',
                             fit: BoxFit.cover,
                             height: 42,
                             width: 42,
                           ),
                         ),
-                        title: Text('${userSnapshot.data.data()['name']}'),
+                        title: Text('${userSnapshot.data!.data()['name']}'),
                         trailing: HuddleCloseButton(),
                       )
                     : Container(),
@@ -125,10 +125,9 @@ class _TaskConversationWidgetState extends State<TaskConversationWidget> {
                 builder: (c, chatSnapshot) {
                   if (chatSnapshot.hasError) print(chatSnapshot.error);
                   if (chatSnapshot.hasData) {
-                    if (chatSnapshot.data.docs.isEmpty) {
+                    if (chatSnapshot.data!.docs.isEmpty) {
                       return HuddleErrorWidget(
-                        message:
-                            'No conversations yet.',
+                        message: 'No conversations yet.',
                       );
                     } else {
                       return ListView.builder(
@@ -136,12 +135,12 @@ class _TaskConversationWidgetState extends State<TaskConversationWidget> {
                         controller: scrollController,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
-                        itemCount: chatSnapshot.data.docs.length,
+                        itemCount: chatSnapshot.data!.docs.length,
                         itemBuilder: (c, i) {
                           final DocumentSnapshot chatDoc =
-                              chatSnapshot.data.docs[i];
+                              chatSnapshot.data!.docs[i];
                           if (chatDoc.data()['sentBy'] ==
-                              fb.auth().currentUser.uid) {
+                              fb.auth().currentUser!.uid) {
                             return ChatMessageWidget.sender(
                               dateTime: chatDoc.data()['createdAt'],
                               imageUrl: chatDoc.data()['attachment'],
@@ -172,12 +171,12 @@ class _TaskConversationWidgetState extends State<TaskConversationWidget> {
               child: widget.isChatExpired
                   ? Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
                         'Task is completed.',
                         style: TextStyle(fontSize: 16),
-                    ),
-                      ))
+                      ),
+                    ))
                   : widget.isChatVisible
                       ? Row(
                           children: [
@@ -227,7 +226,7 @@ class _TaskConversationWidgetState extends State<TaskConversationWidget> {
                                         'taskId': widget.taskId,
                                         'message': message,
                                         'fileType': 0,
-                                        'sentBy': fb.auth().currentUser.uid,
+                                        'sentBy': fb.auth().currentUser!.uid,
                                         'createdAt':
                                             DateTime.now().toIso8601String(),
                                       }).then((chatData) async {
@@ -264,7 +263,7 @@ class _TaskConversationWidgetState extends State<TaskConversationWidget> {
                                               .then((uri) {
                                             chatData.update(data: {
                                               'attachment': uri.toString(),
-                                              'fileType': fileType.toInt
+                                              'fileType': fileType!.toInt
                                             }).then((value) {
                                               widget.onRemoveFile();
                                               flushbar.dismiss();
@@ -276,7 +275,7 @@ class _TaskConversationWidgetState extends State<TaskConversationWidget> {
                                       });
                                     } catch (e) {
                                       if (e is PlatformException) {
-                                        showSnackbar(e.message, context);
+                                        showSnackbar(e.message ?? "", context);
                                       } else if (e is fb.FirebaseError) {
                                         showSnackbar(e.message, context);
                                       } else {
@@ -322,8 +321,9 @@ class _TaskConversationWidgetState extends State<TaskConversationWidget> {
                         Expanded(
                           flex: 3,
                           child: Center(
-                              child: ChoosedFileWidget(fileType,
-                                  image: _bytesData, name: widget.file?.name)),
+                              child: ChoosedFileWidget(fileType!,
+                                  image: _bytesData!,
+                                  name: widget.file.name ?? "")),
                         ),
                       Spacer(flex: 1),
                     ],

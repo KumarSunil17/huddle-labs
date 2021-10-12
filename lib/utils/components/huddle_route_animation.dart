@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class SlideRightRoute extends PageRouteBuilder {
   final Widget page;
-  SlideRightRoute({this.page})
+  SlideRightRoute({required this.page})
       : super(
           pageBuilder: (
             BuildContext context,
@@ -25,9 +25,10 @@ class SlideRightRoute extends PageRouteBuilder {
           ),
         );
 }
+
 class SlideLeftRoute extends PageRouteBuilder {
   final Widget page;
-  SlideLeftRoute({this.page})
+  SlideLeftRoute({required this.page})
       : super(
           pageBuilder: (
             BuildContext context,
@@ -50,9 +51,10 @@ class SlideLeftRoute extends PageRouteBuilder {
           ),
         );
 }
+
 class SlideTopRoute extends PageRouteBuilder {
   final Widget page;
-  SlideTopRoute({this.page})
+  SlideTopRoute({required this.page})
       : super(
           pageBuilder: (
             BuildContext context,
@@ -75,9 +77,10 @@ class SlideTopRoute extends PageRouteBuilder {
           ),
         );
 }
+
 class SlideBottomRoute extends PageRouteBuilder {
   final Widget page;
-  SlideBottomRoute({this.page})
+  SlideBottomRoute({required this.page})
       : super(
           pageBuilder: (
             BuildContext context,
@@ -100,9 +103,10 @@ class SlideBottomRoute extends PageRouteBuilder {
           ),
         );
 }
+
 class FadeRoute extends PageRouteBuilder {
   final Widget page;
-  FadeRoute({this.page})
+  FadeRoute({required this.page})
       : super(
           pageBuilder: (
             BuildContext context,
@@ -117,8 +121,8 @@ class FadeRoute extends PageRouteBuilder {
             Widget child,
           ) =>
               FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
+            opacity: animation,
+            child: child,
+          ),
         );
 }

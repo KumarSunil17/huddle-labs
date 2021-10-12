@@ -19,15 +19,15 @@ class TaskDetailsDialog extends StatefulWidget {
 }
 
 class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
-  StreamSubscription<MouseEvent> _onDragOverSubscription;
-  StreamSubscription<MouseEvent> _onDropSubscription;
-  StreamSubscription<MouseEvent> _onDragLeaveSubscription;
-  StreamSubscription<Event> _fileSelectionSubscription;
-  final StreamController<_DragState> _dragStateStreamController =
-      StreamController<_DragState>.broadcast();
-  final StreamController<Point<double>> _pointStreamController =
-      StreamController<Point<double>>.broadcast();
-  FileUploadInputElement _inputElement;
+  late StreamSubscription<MouseEvent?> _onDragOverSubscription;
+  late StreamSubscription<MouseEvent?> _onDropSubscription;
+  late StreamSubscription<MouseEvent?> _onDragLeaveSubscription;
+  late StreamSubscription<Event?> _fileSelectionSubscription;
+  final StreamController<_DragState?> _dragStateStreamController =
+      StreamController<_DragState?>.broadcast();
+  final StreamController<Point<double>?> _pointStreamController =
+      StreamController<Point<double>?>.broadcast();
+  late FileUploadInputElement _inputElement;
 
   @override
   void dispose() {
@@ -40,7 +40,7 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
     super.dispose();
   }
 
-  File _files;
+  late File? _files;
   void _onDragOver(MouseEvent value) {
     value.stopPropagation();
     value.preventDefault();
@@ -54,7 +54,7 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
     value.stopPropagation();
     value.preventDefault();
     _pointStreamController.sink.add(null);
-    _addFiles(value.dataTransfer.files[0]);
+    _addFiles(value.dataTransfer.files![0]);
   }
 
   void _onDragLeave(MouseEvent value) {
@@ -62,7 +62,7 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
   }
 
   void _fileSelection(Event value) {
-    _addFiles((value.target as FileUploadInputElement).files[0]);
+    _addFiles((value.target as FileUploadInputElement).files![0]);
   }
 
   void _addFiles(File newFiles) {
@@ -74,10 +74,11 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
   @override
   void initState() {
     super.initState();
-    this._onDragOverSubscription = document.body.onDragOver.listen(_onDragOver);
-    this._onDropSubscription = document.body.onDrop.listen(_onDrop);
+    this._onDragOverSubscription =
+        document.body!.onDragOver.listen(_onDragOver);
+    this._onDropSubscription = document.body!.onDrop.listen(_onDrop);
     this._onDragLeaveSubscription =
-        document.body.onDragLeave.listen(_onDragLeave);
+        document.body!.onDragLeave.listen(_onDragLeave);
     this._inputElement = FileUploadInputElement()..style.display = 'none';
     _inputElement.multiple = false;
     _inputElement.accept = 'image/*';
@@ -109,22 +110,22 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                               Row(
                                 children: [
                                   TaskStatusWidget(
-                                      status: snapshot.data.data()['status'],
-                                      onStatusChanged: (snapshot.data.data()[
+                                      status: snapshot.data!.data()['status'],
+                                      onStatusChanged: (snapshot.data!.data()[
                                                           'assignedBy'] ==
                                                       fb
                                                           .auth()
-                                                          .currentUser
+                                                          .currentUser!
                                                           .uid ||
-                                                  snapshot.data.data()[
+                                                  snapshot.data!.data()[
                                                           'assignedTo'] ==
                                                       fb
                                                           .auth()
-                                                          .currentUser
+                                                          .currentUser!
                                                           .uid) &&
-                                              snapshot.data.data()['status'] !=
+                                              snapshot.data!.data()['status'] !=
                                                   TaskStatus.completed.toInt
-                                          ? (i) {
+                                          ? (int i) {
                                               taskCollection
                                                   .doc(widget.taskId)
                                                   .update(data: {
@@ -133,7 +134,7 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                                                 usersCollection
                                                     .doc(fb
                                                         .auth()
-                                                        .currentUser
+                                                        .currentUser!
                                                         .uid)
                                                     .get()
                                                     .then((currentUserDoc) {
@@ -145,11 +146,11 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                                                         .toIso8601String(),
                                                     'createdBy': fb
                                                         .auth()
-                                                        .currentUser
+                                                        .currentUser!
                                                         .uid,
                                                     'message':
-                                                        '$currentUserName changed ${snapshot.data.data()['title']} to ${taskStatusFromInt(i).toTaskString}',
-                                                    'projectId': snapshot.data
+                                                        '$currentUserName changed ${snapshot.data!.data()['title']} to ${taskStatusFromInt(i).toTaskString}',
+                                                    'projectId': snapshot.data!
                                                         .data()['projectId'],
                                                     'taskId': widget.taskId,
                                                   });
@@ -160,7 +161,7 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                                   SizedBox(width: 8),
                                   Tooltip(
                                     message: getDeadlineString(
-                                        snapshot.data.data()['expiresAt']),
+                                        snapshot.data!.data()['expiresAt']),
                                     preferBelow: false,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(4),
@@ -170,10 +171,11 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                                       ]),
                                     ),
                                     child: Material(
-                                        color: snapshot.data.data()['status'] ==
+                                        color: snapshot.data!
+                                                    .data()['status'] ==
                                                 TaskStatus.completed.toInt
                                             ? Color(0xff00cf00)
-                                            : getDeadlineColor(snapshot.data
+                                            : getDeadlineColor(snapshot.data!
                                                 .data()['expiresAt']),
                                         borderRadius: BorderRadius.circular(8),
                                         child: Padding(
@@ -181,14 +183,14 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                                           child: Text(
                                             DateFormat('EEE, MMM d, yyyy')
                                                 .format(DateTime.parse(snapshot
-                                                    .data
+                                                    .data!
                                                     .data()['expiresAt'])),
                                           ),
                                         )),
                                   ),
                                 ],
                               ),
-                              Text('${snapshot.data.data()['title']}',
+                              Text('${snapshot.data!.data()['title']}',
                                   style: Theme.of(context).textTheme.headline4),
                               SizedBox(
                                 height: 12,
@@ -196,10 +198,10 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                               Expanded(
                                 child: SingleChildScrollView(
                                   child: Text(
-                                      '${snapshot.data.data()['description']}',
+                                      '${snapshot.data!.data()['description']}',
                                       style: Theme.of(context)
                                           .textTheme
-                                          .subtitle1
+                                          .subtitle1!
                                           .copyWith(color: Colors.black)),
                                 ),
                               ),
@@ -212,11 +214,11 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                         Expanded(
                             child: TaskConversationWidget(
                           widget.taskId,
-                          snapshot.data.data()['assignedBy'] ==
-                                  fb.auth().currentUser.uid
-                              ? snapshot.data.data()['assignedTo']
-                              : snapshot.data.data()['assignedBy'],
-                          this._files,
+                          snapshot.data!.data()['assignedBy'] ==
+                                  fb.auth().currentUser!.uid
+                              ? snapshot.data!.data()['assignedTo']
+                              : snapshot.data!.data()['assignedBy'],
+                          this._files!,
                           () {
                             setState(() {
                               this._files = null;
@@ -225,31 +227,31 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                           () {
                             this._inputElement.click();
                           },
-                          isChatExpired: snapshot.data.data()['status'] ==
+                          isChatExpired: snapshot.data!.data()['status'] ==
                               TaskStatus.completed.toInt,
-                          isChatVisible: snapshot.data.data()['assignedBy'] ==
-                                  fb.auth().currentUser.uid ||
-                              snapshot.data.data()['assignedTo'] ==
-                                  fb.auth().currentUser.uid,
+                          isChatVisible: snapshot.data!.data()['assignedBy'] ==
+                                  fb.auth().currentUser!.uid ||
+                              snapshot.data!.data()['assignedTo'] ==
+                                  fb.auth().currentUser!.uid,
                         )),
                       ],
                     ),
-                    StreamBuilder(
+                    StreamBuilder<Point<double>?>(
                       initialData: null,
                       stream: this._pointStreamController.stream,
                       builder: (BuildContext context,
-                              AsyncSnapshot<Point<double>> snapPoint) =>
+                              AsyncSnapshot<Point<double>?> snapPoint) =>
                           (snapPoint.data == null ||
                                   snapPoint.data is! Point<double> ||
                                   snapPoint.data ==
                                       const Point<double>(0.0, 0.0))
                               ? Container()
-                              : StreamBuilder(
+                              : StreamBuilder<_DragState?>(
                                   initialData: null,
                                   stream:
                                       this._dragStateStreamController.stream,
                                   builder: (BuildContext context,
-                                          AsyncSnapshot<_DragState>
+                                          AsyncSnapshot<_DragState?>
                                               snapState) =>
                                       (snapState.data == null ||
                                               snapState.data is! _DragState ||
@@ -258,8 +260,8 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                                           ? Container()
                                           : Positioned(
                                               width: 140,
-                                              left: snapPoint.data.x - 115,
-                                              top: snapPoint.data.y - 20,
+                                              left: snapPoint.data!.x - 115,
+                                              top: snapPoint.data!.y - 20,
                                               child: Column(
                                                 children: [
                                                   const Icon(
@@ -296,8 +298,8 @@ enum _DragState {
 
 class TaskStatusWidget extends StatelessWidget {
   final int status;
-  final Function(int) onStatusChanged;
-  const TaskStatusWidget({this.status, this.onStatusChanged});
+  final Function(int)? onStatusChanged;
+  const TaskStatusWidget({required this.status, this.onStatusChanged});
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -336,7 +338,7 @@ class TaskStatusWidget extends StatelessWidget {
                   constraints: BoxConstraints.tightFor(width: 36, height: 36),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   fillColor: getColor(),
-                  onPressed: () => onStatusChanged(status + 1),
+                  onPressed: () => onStatusChanged?.call(status + 1),
                   child: Icon(
                     Icons.navigate_next,
                     color: Colors.white,

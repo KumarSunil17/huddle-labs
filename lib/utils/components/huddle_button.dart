@@ -3,10 +3,14 @@ import 'package:huddlelabs/utils/components/huddle_loader.dart';
 
 class HuddleButton extends StatefulWidget {
   final String text;
-  final double height, width;
+  final double? height, width;
   final VoidCallback onPressed;
   HuddleButton(
-      {Key key, this.text, this.onPressed, this.height = 50, this.width})
+      {Key? key,
+      required this.text,
+      required this.onPressed,
+      this.height = 50,
+      this.width})
       : super(key: key);
 
   @override
@@ -87,7 +91,7 @@ class HuddleCloseButton extends StatefulWidget {
 
 class _HuddleCloseButtonState extends State<HuddleCloseButton>
     with SingleTickerProviderStateMixin {
-  AnimationController rotationController;
+  late AnimationController rotationController;
   @override
   void initState() {
     super.initState();

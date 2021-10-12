@@ -12,7 +12,11 @@ class TaskWidget extends StatelessWidget {
   final int status;
   final String projectId;
   final VoidCallback onAddTask;
-  const TaskWidget({this.onAddTask, this.title, this.status, this.projectId});
+  const TaskWidget(
+      {required this.onAddTask,
+      required this.title,
+      required this.status,
+      required this.projectId});
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +34,13 @@ class TaskWidget extends StatelessWidget {
                 .doc(doc.id)
                 .update(data: {'status': status}).then((value) {
               usersCollection
-                  .doc(fb.auth().currentUser.uid)
+                  .doc(fb.auth().currentUser!.uid)
                   .get()
                   .then((currentUserDoc) {
                 String currentUserName = currentUserDoc.data()['name'];
                 transactionCollection.add({
                   'createdAt': DateTime.now().toIso8601String(),
-                  'createdBy': fb.auth().currentUser.uid,
+                  'createdBy': fb.auth().currentUser!.uid,
                   'message':
                       '$currentUserName changed ${doc.data()['title']} to ${taskStatusFromInt(status).toTaskString}',
                   'projectId': doc.data()['projectId'],
@@ -60,7 +64,7 @@ class TaskWidget extends StatelessWidget {
                       .onSnapshot,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      final List<DocumentSnapshot> tasks = snapshot.data.docs;
+                      final List<DocumentSnapshot> tasks = snapshot.data!.docs;
                       if (tasks.isNotEmpty) {
                         return ListView.builder(
                             shrinkWrap: true,
@@ -174,7 +178,7 @@ class TaskCard extends StatelessWidget {
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               return Tooltip(
-                                message: '${snapshot.data.data()['name']}',
+                                message: '${snapshot.data!.data()['name']}',
                                 preferBelow: false,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(4),
@@ -187,7 +191,7 @@ class TaskCard extends StatelessWidget {
                                   radius: 18,
                                   backgroundColor: const Color(0xfffDFE1E6),
                                   child: Text(
-                                    '${snapshot.data.data()['name'].toString()[0]}',
+                                    '${snapshot.data!.data()['name'].toString()[0]}',
                                     style: TextStyle(
                                         fontSize: 18, color: Colors.black),
                                   ),
@@ -204,7 +208,7 @@ class TaskCard extends StatelessWidget {
 }
 
 class MembersWidget extends StatelessWidget {
-  final String projectId;
+  final String? projectId;
   const MembersWidget({this.projectId});
 
   @override
@@ -224,7 +228,8 @@ class MembersWidget extends StatelessWidget {
                 stream: projectCollection.doc(projectId).onSnapshot,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final List<String> members = List<String>.from(snapshot.data
+                    final List<String> members = List<String>.from(snapshot
+                        .data!
                         .data()['members']
                         .map((e) => e.toString())).toList();
 
@@ -255,7 +260,7 @@ class MembersWidget extends StatelessWidget {
                                             pageBuilder:
                                                 (context, anim1, anim2) =>
                                                     OtherProfileWidget(
-                                                        user.data.id),
+                                                        user.data!.id),
                                           );
                                         },
                                         leading: Material(
@@ -264,15 +269,15 @@ class MembersWidget extends StatelessWidget {
                                           child: FadeInImage.assetNetwork(
                                             placeholder:
                                                 'assets/placeholder.png',
-                                            image:
-                                                user.data.data()['photo'] ?? '',
+                                            image: user.data!.data()['photo'] ??
+                                                '',
                                             fit: BoxFit.cover,
                                             height: 42,
                                             width: 42,
                                           ),
                                         ),
-                                        title:
-                                            Text('${user.data.data()['name']}'),
+                                        title: Text(
+                                            '${user.data!.data()['name']}'),
                                       ),
                                     );
                                   }

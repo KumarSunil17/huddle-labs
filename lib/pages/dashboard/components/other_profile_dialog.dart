@@ -44,7 +44,7 @@ class OtherProfileWidget extends StatelessWidget {
                         color: Colors.transparent,
                         child: FadeInImage.assetNetwork(
                           placeholder: 'assets/placeholder.png',
-                          image: s.data.data()['photo'] ?? '',
+                          image: s.data!.data()['photo'] ?? '',
                           fit: BoxFit.cover,
                           height: 150,
                           width: 150,
@@ -53,18 +53,18 @@ class OtherProfileWidget extends StatelessWidget {
                       SizedBox(
                         height: 28,
                       ),
-                      Text('${s.data.data()['name']}',
+                      Text('${s.data!.data()['name']}',
                           style: TextStyle(
                               fontWeight: FontWeight.w700, fontSize: 22)),
                       SizedBox(
                         height: 8,
                       ),
-                      Text('${s.data.data()['email']}',
+                      Text('${s.data!.data()['email']}',
                           style: TextStyle(fontSize: 16)),
                       SizedBox(
                         height: 2,
                       ),
-                      Text('${s.data.data()['phone']}',
+                      Text('${s.data!.data()['phone']}',
                           style: TextStyle(fontSize: 16)),
                       SizedBox(height: 16),
                       Row(
@@ -73,15 +73,16 @@ class OtherProfileWidget extends StatelessWidget {
                           IconButton(
                             onPressed: () {
                               html.window.open(
-                                  'mailTo:${s.data.data()['email']}', 'Email');
+                                  'mailTo:${s.data!.data()['email']}', 'Email');
                             },
                             color: Colors.red,
                             icon: Icon(Icons.email),
-                          ),SizedBox(width:16),
+                          ),
+                          SizedBox(width: 16),
                           IconButton(
                             onPressed: () {
                               html.window.open(
-                                  'tel:${s.data.data()['phone']}', 'Phone');
+                                  'tel:${s.data!.data()['phone']}', 'Phone');
                             },
                             color: Colors.blue,
                             icon: Icon(Icons.call),
